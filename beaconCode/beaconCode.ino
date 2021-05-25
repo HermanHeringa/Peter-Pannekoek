@@ -1,10 +1,14 @@
 #include <ESP8266WiFi.h>
 
+String hostSSID = "testtest";
+String hostPass = "88888888";
+String droneIdentifier = "ESP-";
+
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
   delay(500);
-  WiFi.begin("testtest", "88888888");
+  WiFi.begin(hostSSID, hostPass);
 
   Serial.print("\nConnecting");
   while (WiFi.status() != WL_CONNECTED)
@@ -22,7 +26,7 @@ void loop() {
    int n = WiFi.scanNetworks();
   for (int i = 0; i < n; i++)
   {
-    if (strstr(WiFi.SSID(i).c_str(), "ESP-")) {
+    if (strstr(WiFi.SSID(i).c_str(), droneIdentifier)) {
       Serial.printf("%s (%ddBm)\n", WiFi.SSID(i).c_str(), WiFi.RSSI(i));
     }
   }
