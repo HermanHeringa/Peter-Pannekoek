@@ -1,10 +1,10 @@
 #include <ESP8266WiFi.h>
 #include <WiFiUdp.h>
 
-#define HOST_SSID "testtest";
-#define HOST_PASS "88888888";
-#define MY_SSID "ESP-0";
-#define MY_PASS "2xjYrA2Ny3VwyJuh";
+#define HOST_SSID "testtest"
+#define HOST_PASS "88888888"
+#define MY_SSID "ESP-14"
+#define MY_PASS "2xjYrA2Ny3VwyJuh"
 #define UDP_PORT 4210
 #define HOST_IP "192.168.137.1"
 

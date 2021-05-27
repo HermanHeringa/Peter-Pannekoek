@@ -1,14 +1,15 @@
 #include <ESP8266WiFi.h>
 #include <WiFiUdp.h>
 
-#define HOST_SSID "testtest";
-#define HOST_PASS "88888888";
-#define DRONE-ID "ESP-";
+#define HOST_SSID "testtest"
+#define HOST_PASS "88888888"
+#define DRONE_ID "ESP-"
 #define UDP_PORT 4210
 
 WiFiUDP UDP;
 char packet[255];
-char reply[] = "Packet received!";
+char reply[255];
+char buff[5];
 
 void setup() {
   // put your setup code here, to run once:
@@ -37,11 +38,14 @@ void loop() {
   int n = WiFi.scanNetworks();
   for (int i = 0; i < n; i++)
   {
-    if (strstr(WiFi.SSID(i).c_str(), DRONE-ID)) {
+    if (strstr(WiFi.SSID(i).c_str(), DRONE_ID)) {
+      strcpy(reply, WiFi.SSID(i).c_str());
+      strcat(reply,  " (");
+      strcat(reply, itoa(WiFi.RSSI(i), buff, 10));
+      strcat(reply, "dBm)");
       UDP.beginPacket(UDP.remoteIP(), UDP.remotePort());
-      UDP.write("%s (%ddBm)\n", WiFi.SSID(i).c_str(), WiFi.RSSI(i));
+      UDP.write(reply);
       UDP.endPacket();
-      Serial.printf("%s (%ddBm)\n", WiFi.SSID(i).c_str(), WiFi.RSSI(i));
     }
   }
 } 
