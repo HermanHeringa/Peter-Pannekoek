@@ -1,9 +1,19 @@
+/*#include <ESP8266WiFi.h>
+#include <WiFiUdp.h>
+
+#define HOST_SSID "AndroidAP"
+#define HOST_PASS "pleo9996"
+#define MY_SSID "ESP-14"
+#define MY_PASS "2xjYrA2Ny3VwyJuh"
+#define UDP_PORT 4210
+#define HOST_IP "192.168.43.101"*/
+
 #include <ESP8266WiFi.h>
 #include <WiFiUdp.h>
 
-#define HOST_SSID "testtest"
-#define HOST_PASS "88888888"
-#define MY_SSID "ESP-14"
+#define HOST_SSID "AndroidAP"
+#define HOST_PASS "pleo9996"
+#define MY_SSID "ESP0-10"
 #define MY_PASS "2xjYrA2Ny3VwyJuh"
 #define UDP_PORT 4210
 
@@ -72,6 +82,33 @@ void loop()
     }
     Serial.print("Packet received: ");
     Serial.println(packet);
+    String mystring(packet);
+    set_speed(255);
+    if(mystring=="f")
+    {
+      move_forward();
+     Serial.println("forward");
+     }
+     else if(mystring=="b")
+     {
+      move_back();
+      Serial.println("back");
+      }
+     else if(mystring=="r")
+     {
+      move_right();
+     Serial.println("right");
+      }
+      else if(mystring=="l")
+     {
+      Serial.println("left");
+      move_left();
+      }
+       else if(mystring=="s")
+     {
+      Serial.println("stop");
+      motor_off();
+      }
   }
 }
 
