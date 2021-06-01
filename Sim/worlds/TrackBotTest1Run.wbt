@@ -1,0 +1,106 @@
+#VRML_SIM R2021a utf8
+WorldInfo {
+  basicTimeStep 2
+  FPS 30
+  coordinateSystem "NUE"
+}
+Viewpoint {
+  orientation 0.13939475284780764 0.9486848557371542 0.2838417646743927 3.992235257611185
+  position -0.9466367469041621 0.7149540247437118 -0.6646836847161439
+}
+TexturedBackground {
+}
+TexturedBackgroundLight {
+}
+RectangleArena {
+}
+Robot {
+  translation 0 0.03 0
+  children [
+    Solid {
+      children [
+        DEF BotBody Shape {
+          appearance PBRAppearance {
+          }
+          geometry Box {
+            size 0.13 0.05 0.09
+          }
+        }
+      ]
+      boundingObject USE BotBody
+      physics Physics {
+      }
+    }
+    Track {
+      translation 0 0 0.05
+      children [
+        DEF G0 Group {
+          children [
+            DEF BotTrackBox Shape {
+              appearance PBRAppearance {
+                baseColor 0 0 0
+                roughness 1
+                metalness 0
+              }
+              geometry Box {
+                size 0.095 0.06 0.02
+              }
+            }
+            Transform {
+              translation -0.05 0 0
+              rotation 1 0 0 -1.5707953071795862
+              children [
+                DEF BotTrackCyl Shape {
+                  appearance PBRAppearance {
+                    baseColor 0 0 0
+                    roughness 1
+                    metalness 0
+                  }
+                  geometry Cylinder {
+                    height 0.02
+                    radius 0.03
+                  }
+                }
+              ]
+            }
+            Transform {
+              translation 0.05 0 0
+              rotation -1 0 0 1.5708
+              children [
+                USE BotTrackCyl
+              ]
+            }
+          ]
+        }
+      ]
+      name "trackRight"
+      boundingObject USE G0
+      physics Physics {
+      }
+      device [
+        LinearMotor {
+          name "RightMotor"
+        }
+      ]
+    }
+    Track {
+      translation 0 0 -0.05
+      children [
+        USE G0
+      ]
+      name "trackLeft"
+      boundingObject USE G0
+      physics Physics {
+      }
+      device [
+        LinearMotor {
+          name "LeftMotor"
+        }
+      ]
+    }
+  ]
+  boundingObject USE BotBody
+  physics Physics {
+  }
+  controller "test"
+}
