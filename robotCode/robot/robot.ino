@@ -8,14 +8,14 @@
 #define UDP_PORT 4210
 
 //motor 1
-int ln1 = 0; //D3
-int ln2 = 4; //D2
-int ena = 5; //D1
+int motorOneReverse = 0; //D3
+int motorOneForward = 4; //D2
+int motorOneSpeed = 5; //D1
 
 //motor 2
-int ln3 = 14; //D5
-int ln4 = 12; //D6
-int enb = 13; //D7
+int motorTwoReverse = 14; //D5
+int motorTwoForward = 12; //D6
+int motorTwoSpeed = 13; //D7
 
 WiFiUDP UDP;
 char packet[255];
@@ -23,13 +23,13 @@ char reply[] = "Packet received!";
 
 void setup() 
 {
-  pinMode(ln1, OUTPUT);
-  pinMode(ln2 , OUTPUT);
-  pinMode(ena , OUTPUT);
+  pinMode(motorOneReverse, OUTPUT);
+  pinMode(motorOneForward , OUTPUT);
+  pinMode(motorOneSpeed , OUTPUT);
  
-  pinMode(ln3, OUTPUT);
-  pinMode(ln4 , OUTPUT);
-  pinMode(enb , OUTPUT);
+  pinMode(motorTwoReverse, OUTPUT);
+  pinMode(motorTwoForward , OUTPUT);
+  pinMode(motorTwoSpeed , OUTPUT);
   
   // Connect to host wifi network
   Serial.begin(9600);
@@ -78,14 +78,15 @@ void loop()
 //Packets zijn een direction (1 tot 3 cijfers), gevolgd door een plat streepje (-), gevolgd door een snelheid (1 tot 3 cijfers), met daarna een terminating zero.
 void packetHandler (char input[255]) {
   int temp;
+  int i;
   char direction[3];
-  for (int i = 0; input[i] != '-'; i++) {
+  for (i = 0; input[i] != '-'; i++) {
     direction[i] = input[i];
     temp = i;
   }
   direction[temp+1] = '\0';
   char speed[3];
-  for (int i = 0; input[i+temp+1] != '\0'; i++) {
+  for (i = 0; input[i+temp+1] != '\0'; i++) {
     speed[i] = input[i+temp];
   }
   speed[i+1] = '\0';
@@ -121,41 +122,41 @@ int getAngle() {
 }
 
 void set_speed(int Speed) {
-  analogWrite(ena,Speed);
-  analogWrite(enb,Speed);
+  analogWrite(motorOneSpeed,Speed);
+  analogWrite(motorTwoSpeed,Speed);
 }
  
 void move_forward() { 
-  digitalWrite(ln1, LOW);
-  digitalWrite(ln2 , HIGH);
-  digitalWrite(ln3, LOW);
-  digitalWrite(ln4 , HIGH);
+  digitalWrite(motorOneReverse, LOW);
+  digitalWrite(motorOneForward , HIGH);
+  digitalWrite(motorTwoReverse, LOW);
+  digitalWrite(motorTwoForward , HIGH);
 }
   
 void move_back() {
-  digitalWrite(ln1, HIGH);
-  digitalWrite(ln2 , LOW);
-  digitalWrite(ln3, HIGH);
-  digitalWrite(ln4 , LOW);
+  digitalWrite(motorOneReverse, HIGH);
+  digitalWrite(motorOneForward , LOW);
+  digitalWrite(motorTwoReverse, HIGH);
+  digitalWrite(motorTwoForward , LOW);
 }
   
 void motor_off() {
-  digitalWrite(ln1,LOW);
-  digitalWrite(ln2 , LOW);
-  digitalWrite(ln3, LOW);
-  digitalWrite(ln4 , LOW); 
+  digitalWrite(motorOneReverse,LOW);
+  digitalWrite(motorOneForward , LOW);
+  digitalWrite(motorTwoReverse, LOW);
+  digitalWrite(motorTwoForward , LOW); 
 }
   
 void move_right() {
-  digitalWrite(ln1,LOW);
-  digitalWrite(ln2 , HIGH);
-  digitalWrite(ln3, HIGH);
-  digitalWrite(ln4 , LOW); 
+  digitalWrite(motorOneReverse,LOW);
+  digitalWrite(motorOneForward , HIGH);
+  digitalWrite(motorTwoReverse, HIGH);
+  digitalWrite(motorTwoForward , LOW); 
 }
   
 void move_left() {
-  digitalWrite(ln1,HIGH);
-  digitalWrite(ln2 , LOW);
-  digitalWrite(ln3, LOW);
-  digitalWrite(ln4 , HIGH); 
+  digitalWrite(motorOneReverse,HIGH);
+  digitalWrite(motorOneForward , LOW);
+  digitalWrite(motorTwoReverse, LOW);
+  digitalWrite(motorTwoForward , HIGH); 
 }
