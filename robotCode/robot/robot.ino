@@ -82,29 +82,29 @@ void loop()
     }
     Serial.print("Packet received: ");
     Serial.println(packet);
-    String mystring(packet);
+    String stringPacket(packet);
     set_speed(255);
-    if(mystring=="f")
+    if(stringPacket=="f")
     {
       move_forward();
      Serial.println("forward");
      }
-     else if(mystring=="b")
+     else if(stringPacket=="b")
      {
       move_back();
       Serial.println("back");
       }
-     else if(mystring=="r")
+     else if(stringPacket=="r")
      {
       move_right();
      Serial.println("right");
       }
-      else if(mystring=="l")
+      else if(stringPacket=="l")
      {
       Serial.println("left");
       move_left();
       }
-       else if(mystring=="s")
+       else if(stringPacket=="s")
      {
       Serial.println("stop");
       motor_off();
