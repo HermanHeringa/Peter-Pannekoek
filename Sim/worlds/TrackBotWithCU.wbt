@@ -13,7 +13,8 @@ TexturedBackgroundLight {
 RectangleArena {
 }
 Robot {
-  translation 0 0.13 0
+  translation 0.002641507577426181 0.02984066650271515 -0.005814766821345764
+  rotation 1.4183225642431638e-06 0.9999999999989942 -1.0506211775147366e-08 0.017191843512314578
   children [
     Solid {
       children [

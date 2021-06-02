@@ -7,7 +7,7 @@ TIME_STEP = 16
 
 MAX_SPEED = 1
 UDP_IP = "192.168.11.193"
-UDP_PORT = 65432
+UDP_PORT = 4210
 UDP_HOSTPORT = 1337
 ADDR = (UDP_IP,UDP_PORT)
 HOSTADDR = (UDP_IP, UDP_HOSTPORT)
@@ -85,7 +85,7 @@ def start():
                 data = -1
                 addr = -1
             if data != -1:
-            
+                
                 print(data)
                 print(addr)
                 
