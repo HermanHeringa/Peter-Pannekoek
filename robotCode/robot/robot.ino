@@ -25,7 +25,7 @@ int motorTwoSpeed = 13; //D7
 
 WiFiUDP UDP;
 char packet[255];
-char reply[] = "Packet received!";
+char reply[255];
 
 void setup()
 {
@@ -86,33 +86,14 @@ void loop()
     }
     Serial.print("Packet received: ");
     Serial.println(packet);
-    /*String stringPacket(packet);
-      set_speed(255);
-      if (stringPacket == "f")
-      {
-      move_forward();
-      Serial.println("forward");
-      }
-      else if (stringPacket == "b")
-      {
-      move_back();
-      Serial.println("back");
-      }
-      else if (stringPacket == "r")
-      {
-      move_right();
-      Serial.println("right");
-      }
-      else if (stringPacket == "l")
-      {
-      Serial.println("left");
-      move_left();
-      }
-      else if (stringPacket == "s")
-      {
-      Serial.println("stop");
-      motor_off();
-      }*/
+    
+    //send angle to central unit
+    char buffer [4];
+    reply = itoa(getangle(), buffer, 10);
+    UDP.beginPacket(UDP.remoteIP(), UDP.remotePort());
+    UDP.write(reply);
+    UDP.endPacket();
+
     packetHandler(packet);
   }
 }
