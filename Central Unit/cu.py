@@ -33,4 +33,3 @@ while True:
 
     message = input("command2: ").encode()
     control(message, ADDR2)
- 

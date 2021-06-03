@@ -39,6 +39,7 @@ def get_bearing_in_degrees():
 def get_pos():
     xyz = gps.getValues() #Get XYZ Values from GPS Module
     xyz.pop(1)            #Remove Y value because it is not needed
+    xyz = [ round(elem, 2) for elem in xyz]
     return xyz            #Return X and Z values
     
 def run_motor(left, right):
@@ -76,7 +77,10 @@ def turn(degrees):
 
 
 
-def start():    
+def start():
+
+    send_msg("w")
+    
     while robot.step(TIME_STEP) != -1:
                   
             try:
@@ -84,12 +88,15 @@ def start():
             except:
                 data = -1
                 addr = -1
+            
             if data != -1:
                 
                 print(data)
                 print(addr)
-                
-                if data == b"f":
+                if data == b"a":
+                    print("aaa")
+                    send_msg("a")
+                elif data == b"f":
                     send_msg(-1)
                     forward()
                 elif data == b"b":
