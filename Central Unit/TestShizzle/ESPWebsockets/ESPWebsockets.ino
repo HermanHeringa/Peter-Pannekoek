@@ -15,8 +15,8 @@
 #include <ArduinoWebsockets.h>
 #include <ESP8266WiFi.h>
 
-const char* ssid = "JansenNet"; //Enter SSID
-const char* password = "ThomLuukSam"; //Enter Password
+const char* ssid = "SSIDHERE"; //Enter SSID
+const char* password = "PASSHERE"; //Enter Password
 const char* websockets_server_host = "192.168.11.193"; //Enter server adress
 const uint16_t websockets_server_port = 1337; // Enter server port
 
