@@ -6,8 +6,6 @@
 
 #define HOST_SSID "testtest"
 #define HOST_PASS "88888888"
-#define MY_SSID "ESP0-4"
-#define MY_PASS "2xjYrA2Ny3VwyJuh"
 #define UDP_PORT 4210
 
 //magnetometer
@@ -50,25 +48,14 @@ void setup()
   Serial.print("Connected, IP address: ");
   Serial.println(WiFi.localIP());
 
-  // Setup network for beacons to track
-  boolean fakeNetwork = WiFi.softAP(MY_SSID, MY_PASS);
-  if (fakeNetwork) {
-    Serial.println("Network created.");
-  }
-  else {
-    Serial.println("Network creation failed");
-  }
-
   // Setup UDP
   UDP.begin(UDP_PORT);
   Serial.print("Listening on UDP port ");
   Serial.println(UDP_PORT);
 
   // Setup magnetometer
-  if (!mag.begin())
-  {
-    /* There was a problem detecting the HMC5883 ... check your connections */
-    Serial.println("Ooops, no HMC5883 detected ... Check your wiring!");
+  if (!mag.begin()) {
+    Serial.println("No HMC5883 detected.");
     while (1);
   }
 }
@@ -80,13 +67,12 @@ void loop()
     Serial.print("Received packet! Size: ");
     Serial.println(packetSize);
     int len = UDP.read(packet, 255);
-    if (len > 0)
-    {
+    if (len > 0) {
       packet[len] = '\0';
     }
     Serial.print("Packet received: ");
     Serial.println(packet);
-    
+
     //send angle to central unit
     char buffer [4];
     reply = itoa(getangle(), buffer, 10);
