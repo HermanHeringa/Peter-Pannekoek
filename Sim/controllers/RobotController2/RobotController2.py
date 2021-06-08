@@ -122,5 +122,5 @@ def start():
 #Setup
 heading = get_bearing_in_degrees()
 pos = get_pos()
-start()
+#start()
     
