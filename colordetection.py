@@ -67,8 +67,12 @@ while(1):
 	
 	for pic, contour in enumerate(contours):
 		area = cv2.contourArea(contour)
-		if(area > 50000):
+		if(area > 1000):
 			x, y, w, h = cv2.boundingRect(contour)
+			M = cv2.moments(contour)
+			cx = int(M['m10']/M['m00'])
+			cy = int(M['m01']/M['m00'])
+			print(cx,cy)
 			imageFrame = cv2.rectangle(imageFrame, (x, y),
 									(x + w, y + h),
 									(0, 0, 255), 2)
@@ -84,7 +88,7 @@ while(1):
 	#print(contours)
 	for pic, contour in enumerate(contours):
 		area = cv2.contourArea(contour)
-		if(area > 50000):
+		if(area > 1000):
 			x, y, w, h = cv2.boundingRect(contour)
 			M = cv2.moments(contour)
 			cx = int(M['m10']/M['m00'])
@@ -93,7 +97,6 @@ while(1):
 			imageFrame = cv2.rectangle(imageFrame, (x, y),
 									(x + w, y + h),
 									(0, 255, 0), 2)
-			#print(area)
             
 			cv2.putText(imageFrame, "Green Colour", (x, y),
 						cv2.FONT_HERSHEY_SIMPLEX,
@@ -105,8 +108,12 @@ while(1):
 										cv2.CHAIN_APPROX_SIMPLE)
 	for pic, contour in enumerate(contours):
 		area = cv2.contourArea(contour)
-		if(area > 50000):
+		if(area > 1000):
 			x, y, w, h = cv2.boundingRect(contour)
+			M = cv2.moments(contour)
+			cx = int(M['m10']/M['m00'])
+			cy = int(M['m01']/M['m00'])
+			print(cx,cy)
 			imageFrame = cv2.rectangle(imageFrame, (x, y),
 									(x + w, y + h),
 									(255, 0, 0), 2)
@@ -120,6 +127,4 @@ while(1):
 	if cv2.waitKey(10) & 0xFF == ord('q'):
 		cap.release()
 		cv2.destroyAllWindows()
-		break
-	#print(area)
-	#time.sleep(5)
+		break	
