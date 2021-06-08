@@ -2,7 +2,9 @@ from controller import Robot, Motor, Compass, GPS
 import math
 import socket
 import numpy as np
-
+#IMPORTENT#
+#this is a variation to RobotController1 from 8/6/21
+#the goal was to develop a simpler version to turn the robot
 
 TIME_STEP = 16
 
@@ -114,7 +116,7 @@ def start():
     send_msg("w")
     
     while robot.step(TIME_STEP) != -1:
-        targetpos = np.array([1.5,1.5])
+        targetpos = np.array([0.0,2.0])
         targetheading = calculate_degrees(targetpos)
         #targetheading = -20.0
         
@@ -123,21 +125,22 @@ def start():
         
         start_angle = get_bearing_in_degrees()
         current_angle = start_angle
-        dest_heading = (360-targetheading)
+        dest_heading = 360 - targetheading
         if dest_heading > 360:
             dest_heading = dest_heading - 360
         angle_error = current_angle - dest_heading
-        print (f"error: {targetheading}")
         
-        if current_angle != ((start_angle + targetheading) % 360) and angle_error > 2 :
-            print(current_angle)
-            print(current_angle + targetheading)
-            if current_angle > ((current_angle + targetheading) % 360):
-                #print("a")
+        print (f"error: {angle_error}")
+        print(f"current angle: {current_angle}")
+        print(f"dest angle: {dest_heading}")
+        print(f"target heading: {targetheading}")
+        
+        if current_angle != ((start_angle + targetheading) % 360) and angle_error > 2 or angle_error < -2 :
+            if angle_error > 0:
                 left()
-            elif current_angle < ((current_angle + targetheading) % 360):
-                #print("b")
+            elif angle_error <= 0:
                 right()
+            
         else:
              forward()
             

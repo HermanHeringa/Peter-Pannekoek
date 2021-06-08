@@ -16,7 +16,7 @@ RectangleArena {
 }
 Robot {
   translation 1 0.0298407 1
-  rotation 0 0.9999999999989976 0 0
+  rotation 0 1 0 -0.261795307179586
   children [
     Solid {
       children [
@@ -110,7 +110,7 @@ Robot {
   boundingObject USE BotBody
   physics Physics {
   }
-  controller "RobotController1"
+  controller "RobotController3"
 }
 Robot {
   translation 0.16 0.0298407 1.84
