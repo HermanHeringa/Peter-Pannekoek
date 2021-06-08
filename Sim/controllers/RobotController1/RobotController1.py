@@ -7,7 +7,7 @@ import numpy as np
 TIME_STEP = 16
 
 MAX_SPEED = 1
-UDP_IP = "192.168.11.193"
+UDP_IP = "127.0.0.1"
 UDP_PORT = 4210
 UDP_HOSTPORT = 1337
 ADDR = (UDP_IP,UDP_PORT)
@@ -80,16 +80,16 @@ def turn(degrees):
 def calculate_degrees(pos):
     current_pos = np.array(get_pos())
     origin = np.array([pos[0],current_pos[1]])
-    print(f" curpos {current_pos}")
-    print(f" pos {pos}")
-    print(f" origin {origin}")
+   # print(f" curpos {current_pos}")
+   # print(f" pos {pos}")
+   # print(f" origin {origin}")
     
     v0 = origin - current_pos
     v1 = pos - current_pos
     
     angle = np.degrees(np.math.atan2(np.linalg.det([v0,v1]),np.dot(v0,v1)))
     
-    print(angle)
+    #print(angle)
     
     #if leftbehind
     if pos[0] < current_pos[0] and pos[1] < current_pos[1]:
@@ -105,7 +105,7 @@ def calculate_degrees(pos):
     elif pos[0] > current_pos[0] and pos[1] > current_pos[1]:
         angle = angle * -1.0
     
-    print(angle)
+   # print(angle)
     return angle
         
         
@@ -115,7 +115,7 @@ def start():
     send_msg("w")
     
     while robot.step(TIME_STEP) != -1:
-        targetpos = np.array([0.0,2.0])
+        targetpos = np.array([1.5,1.5])
         targetheading = calculate_degrees(targetpos)
         #targetheading = -20.0
         
@@ -124,8 +124,13 @@ def start():
         
         start_angle = get_bearing_in_degrees()
         current_angle = start_angle
+        dest_heading = (360-targetheading)
+        if dest_heading > 360:
+            dest_heading = dest_heading - 360
+        angle_error = current_angle - dest_heading
+        print (f"error: {angle_error}")
         
-        if current_angle != ((start_angle + targetheading) % 360 ):
+        if current_angle != ((start_angle + targetheading) % 360) and angle_error > 2 :
             print(current_angle)
             print(current_angle + targetheading)
             if current_angle > ((current_angle + targetheading) % 360):
@@ -134,10 +139,10 @@ def start():
             elif current_angle < ((current_angle + targetheading) % 360):
                 #print("b")
                 right()
-            else:
-                stop()
+        else:
+             forward()
             
-            current_angle = get_bearing_in_degrees()
+        current_angle = get_bearing_in_degrees()
             #targetheading = calculate_degrees(targetpos)
             
         
