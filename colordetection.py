@@ -67,8 +67,9 @@ while(1):
 	
 	for pic, contour in enumerate(contours):
 		area = cv2.contourArea(contour)
-		if(area > 50000):
+		if(area > 1000):
 			x, y, w, h = cv2.boundingRect(contour)
+			M = cv2.moments(contour)
 			cx = int(M['m10']/M['m00'])
 			cy = int(M['m01']/M['m00'])
 			print(cx,cy)
@@ -87,7 +88,7 @@ while(1):
 	#print(contours)
 	for pic, contour in enumerate(contours):
 		area = cv2.contourArea(contour)
-		if(area > 50000):
+		if(area > 1000):
 			x, y, w, h = cv2.boundingRect(contour)
 			M = cv2.moments(contour)
 			cx = int(M['m10']/M['m00'])
@@ -107,7 +108,7 @@ while(1):
 										cv2.CHAIN_APPROX_SIMPLE)
 	for pic, contour in enumerate(contours):
 		area = cv2.contourArea(contour)
-		if(area > 50000):
+		if(area > 1000):
 			x, y, w, h = cv2.boundingRect(contour)
 			M = cv2.moments(contour)
 			cx = int(M['m10']/M['m00'])
