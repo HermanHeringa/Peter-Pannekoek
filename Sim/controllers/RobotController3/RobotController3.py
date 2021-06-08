@@ -116,29 +116,29 @@ def start():
     send_msg("w")
     
     while robot.step(TIME_STEP) != -1:
-        targetpos = np.array([0.0,2.0])
+        targetpos = np.array([2.0,2.0])
         targetheading = calculate_degrees(targetpos)
         #targetheading = -20.0
         
         
         
-        
-        start_angle = get_bearing_in_degrees()
-        current_angle = start_angle
+        current_angle = get_bearing_in_degrees()
         dest_heading = 360 - targetheading
         if dest_heading > 360:
             dest_heading = dest_heading - 360
         angle_error = current_angle - dest_heading
+        if angle_error < 0:
+            angle_error = angle_error * -1
         
         print (f"error: {angle_error}")
         print(f"current angle: {current_angle}")
         print(f"dest angle: {dest_heading}")
         print(f"target heading: {targetheading}")
         
-        if current_angle != ((start_angle + targetheading) % 360) and angle_error > 2 or angle_error < -2 :
-            if angle_error > 0:
+        if current_angle != dest_heading and angle_error > 2 or angle_error < -2 :
+            if angle_error <= 45:
                 left()
-            elif angle_error <= 0:
+            elif angle_error > 45:
                 right()
             
         else:
