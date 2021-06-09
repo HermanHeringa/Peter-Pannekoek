@@ -33,6 +33,7 @@ def send_msg(message):
     sock.sendto(str(message).encode(), HOSTADDR)
 
 def get_bearing_in_degrees():
+    #calculate the bearing/heading
     north = compass.getValues()
     rad = math.atan2(north[0], north[2])
     bearing = (rad - 1.5708) / math.pi * 180.0
@@ -88,10 +89,12 @@ def calculate_degrees(pos):
     v0 = current_pos - pos
     v1 = origin - pos
     
+    #to calculate the angle to turn to the goal from 0 degrees
     angle = np.degrees(np.math.atan2(np.linalg.det([v0,v1]),np.dot(v0,v1)))
-    
     #print(angle)
     
+    #When the goal is in a different quadrant adjustments need to be made
+    #these statements define the quadrants
     #if leftbehind
     if pos[0] < current_pos[0] and pos[1] < current_pos[1]:
         angle = 180.0 - angle
@@ -128,47 +131,48 @@ def start():
     wahedWaar = True
     
     while robot.step(TIME_STEP) != -1:
-   
+        #only assign the goal once and calculate how much degrees to turn from the 0 point
+        #if you repeat these calculations the degrees to turn from the 0 point will shift
         if wahedWaar:
             targetpos = np.array([1.5,1.0])
             targetheading = calculate_degrees(targetpos)
             print(f"target heading: {targetheading}")
+            #we split the targetheading into postives and negatives to later specify which wat to turn to
             if targetheading > 180:
                 targetheading = targetheading - 360
-
+        
+        #get the angle of the bot compared to the simulated magnetic north
         current_angle = get_bearing_in_degrees()
         
-        
+        #only calculate the destination heading once so that it won't shift
         if wahedWaar:
             dest_heading = 360 - targetheading
+            #to make sure we stay in the first circle only we subtract 360 degrees when we go over the 360
             if dest_heading > 360:
                 dest_heading = dest_heading - 360
             print(f"dest angle: {dest_heading}")
             print(f"current angle: {current_angle}")
             wahedWaar = False
-        
+            
+        #we constantly calculate the angle error. 
+        #this the difference between it's current angle and the destinations angle
         angle_error = current_angle - dest_heading
         print (f"error: {angle_error}")
         print(f"current angle: {current_angle}")
         
         
-        
+        #intiate the turn if we are not currently looking at the destinations heading
+        #because the robot is not 100% accurate we give it a slight error zone of 2 degrees
         if current_angle != dest_heading and angle_error > 1 or angle_error < -1 :
+            #here we choose which side to turn to.
+            #because we split the targetheading in 2 sides we can do it simply by looking if it is negative or positive
             if targetheading > 0:
                 left()
             else: 
                 right()
         else:
              forward()
-            
-        #current_angle = get_bearing_in_degrees()
-            #targetheading = calculate_degrees(targetpos)
-            #if angle_error >= 0 and targetheading > 0:
-             #   left()
-            #elif angle_error < 0:
-             #   right()  
-        
-               
+                                 
 #Setup
 heading = get_bearing_in_degrees()
 pos = get_pos()
