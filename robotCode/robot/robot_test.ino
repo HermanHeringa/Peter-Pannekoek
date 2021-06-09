@@ -1,4 +1,4 @@
-/*#include <ESP8266WiFi.h>
+#include <ESP8266WiFi.h>
 #include <WiFiUdp.h>
 
 #define HOST_SSID "AndroidAP"
@@ -6,16 +6,8 @@
 #define MY_SSID "ESP-14"
 #define MY_PASS "2xjYrA2Ny3VwyJuh"
 #define UDP_PORT 4210
-#define HOST_IP "192.168.43.101"*/
+IPAddress HOST_IP =IPAddress(224, 0, 1, 3);
 
-#include <ESP8266WiFi.h>
-#include <WiFiUdp.h>
-
-#define HOST_SSID "AndroidAP"
-#define HOST_PASS "pleo9996"
-#define MY_SSID "ESP0-10"
-#define MY_PASS "2xjYrA2Ny3VwyJuh"
-#define UDP_PORT 4210
 
 //motor 1
 int motorOneReverse = 0; //D3
@@ -71,6 +63,13 @@ void setup()
 
 void loop()
 {
+  String string= "gogogo";
+     char msg[255];
+     string.toCharArray(msg,255);
+     UDP.beginPacketMulticast(HOST_IP, UDP_PORT, WiFi.localIP());
+     UDP.write(msg);
+     UDP.endPacket();
+    
   int packetSize = UDP.parsePacket();
   if (packetSize) {
     Serial.print("Received packet! Size: ");
@@ -84,9 +83,11 @@ void loop()
     Serial.println(packet);
     String mystring(packet);
     set_speed(255);
+    
     if(mystring=="f")
     {
       move_forward();
+     
      Serial.println("forward");
      }
      else if(mystring=="b")

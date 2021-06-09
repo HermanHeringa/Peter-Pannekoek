@@ -75,7 +75,7 @@ void loop()
 
     //send angle to central unit
     char buffer [4];
-    reply = itoa(getangle(), buffer, 10);
+    reply = itoa(getAngle(), buffer, 10);
     UDP.beginPacket(UDP.remoteIP(), UDP.remotePort());
     UDP.write(reply);
     UDP.endPacket();

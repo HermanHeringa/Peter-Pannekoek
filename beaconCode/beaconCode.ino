@@ -1,8 +1,8 @@
 #include <ESP8266WiFi.h>
 #include <WiFiUdp.h>
 
-#define HOST_SSID "testtest"
-#define HOST_PASS "88888888"
+#define HOST_SSID "AndroidAP"
+#define HOST_PASS "pleo9996"
 #define DRONE_ID "ESP-"
 #define UDP_PORT 4210
 
@@ -34,18 +34,10 @@ void setup() {
 }
 
 void loop() {
-  
-  int n = WiFi.scanNetworks();
-  for (int i = 0; i < n; i++)
-  {
-    if (strstr(WiFi.SSID(i).c_str(), DRONE_ID)) {
-      strcpy(reply, WiFi.SSID(i).c_str());
-      strcat(reply,  " (");
-      strcat(reply, itoa(WiFi.RSSI(i), buff, 10));
-      strcat(reply, "dBm)");
-      UDP.beginPacket(UDP.remoteIP(), UDP.remotePort());
-      UDP.write(reply);
-      UDP.endPacket();
-    }
-  }
+  String astring= "hi";
+  char msg[255];
+  astring.toCharArray(msg,255);
+  UDP.beginPacket(UDP.remoteIP(), UDP.remotePort());
+  UDP.write(msg);
+  UDP.endPacket();
 } 
