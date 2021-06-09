@@ -100,11 +100,11 @@ def calculate_degrees(pos):
         angle = angle * -1.0
     #if rightbehind
     elif pos[0] > current_pos[0] and pos[1] < current_pos[1]:
-        angle = 180.0 - angle - 360
-    
+        angle = 180.0 - angle - 360 
     #if rightfront
     elif pos[0] > current_pos[0] and pos[1] > current_pos[1]:
         angle = angle * -1.0
+ 
     #if target is directly behind
     elif current_pos[0] == pos[0] and current_pos[1] > pos[1]:
         angle = 180
@@ -153,11 +153,11 @@ def start():
         
         
         
-        if current_angle != dest_heading and angle_error > 2 or angle_error < -2 :
+        if current_angle != dest_heading and angle_error > 1 or angle_error < -1 :
             if targetheading > 0:
                 left()
             else: 
-                right()  
+                right()
         else:
              forward()
             
