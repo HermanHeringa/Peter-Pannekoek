@@ -134,7 +134,7 @@ def start():
         #only assign the goal once and calculate how much degrees to turn from the 0 point
         #if you repeat these calculations the degrees to turn from the 0 point will shift
         if wahedWaar:
-            targetpos = np.array([1.5,1.0])
+            targetpos = np.array([1.0,1.75])
             targetheading = calculate_degrees(targetpos)
             print(f"target heading: {targetheading}")
             #we split the targetheading into postives and negatives to later specify which wat to turn to
@@ -163,7 +163,7 @@ def start():
         
         #intiate the turn if we are not currently looking at the destinations heading
         #because the robot is not 100% accurate we give it a slight error zone of 2 degrees
-        if current_angle != dest_heading and angle_error > 1 or angle_error < -1 :
+        if current_angle != dest_heading and angle_error > 2 or angle_error < -2 :
             #here we choose which side to turn to.
             #because we split the targetheading in 2 sides we can do it simply by looking if it is negative or positive
             if targetheading > 0:
