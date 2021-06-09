@@ -85,8 +85,8 @@ def calculate_degrees(pos):
    # print(f" pos {pos}")
    # print(f" origin {origin}")
     
-    v0 = origin - current_pos
-    v1 = pos - current_pos
+    v0 = current_pos - pos
+    v1 = origin - pos
     
     angle = np.degrees(np.math.atan2(np.linalg.det([v0,v1]),np.dot(v0,v1)))
     
@@ -100,13 +100,24 @@ def calculate_degrees(pos):
         angle = angle * -1.0
     #if rightbehind
     elif pos[0] > current_pos[0] and pos[1] < current_pos[1]:
-        angle = 180.0 - angle
+        angle = 180.0 - angle - 360
     
     #if rightfront
     elif pos[0] > current_pos[0] and pos[1] > current_pos[1]:
         angle = angle * -1.0
-    
-   # print(angle)
+    #if target is directly behind
+    elif current_pos[0] == pos[0] and current_pos[1] > pos[1]:
+        angle = 180
+    #if target is directly in front
+    elif current_pos[0] == pos[0] and current_pos[1] < pos[1]:
+        angle = 0
+    #if target is directly to the left
+    elif current_pos[1] == pos[1] and current_pos[0] > pos[0]:
+        angle = 90
+    #if target is directly to the right
+    elif current_pos[1] == pos[1] and current_pos[0] < pos[0]:
+        angle = -90
+    #print(angle)
     return angle
         
         
@@ -114,41 +125,48 @@ def calculate_degrees(pos):
 def start():
 
     send_msg("w")
+    wahedWaar = True
     
     while robot.step(TIME_STEP) != -1:
-        targetpos = np.array([1.5,0.0])
-        targetheading = calculate_degrees(targetpos)
-        #targetheading = -20.0
-        
-        
-        
+   
+        if wahedWaar:
+            targetpos = np.array([1.5,1.0])
+            targetheading = calculate_degrees(targetpos)
+            print(f"target heading: {targetheading}")
+            if targetheading > 180:
+                targetheading = targetheading - 360
+
         current_angle = get_bearing_in_degrees()
-        dest_heading = 360 - targetheading
-        if dest_heading > 360:
-            dest_heading = dest_heading - 360
-        angle_error = current_angle - dest_heading
-        if angle_error < 0:
-            angle_error = angle_error * -1
-        if targetheading > 180:
-            targetheading -= 360
         
+        
+        if wahedWaar:
+            dest_heading = 360 - targetheading
+            if dest_heading > 360:
+                dest_heading = dest_heading - 360
+            print(f"dest angle: {dest_heading}")
+            print(f"current angle: {current_angle}")
+            wahedWaar = False
+        
+        angle_error = current_angle - dest_heading
         print (f"error: {angle_error}")
         print(f"current angle: {current_angle}")
-        print(f"dest angle: {dest_heading}")
-        print(f"target heading: {targetheading}")
+        
+        
         
         if current_angle != dest_heading and angle_error > 2 or angle_error < -2 :
-            if targetheading >= 0:
+            if targetheading > 0:
                 left()
-            elif targetheading < 0:
-                right()
-            
+            else: 
+                right()  
         else:
              forward()
             
-        current_angle = get_bearing_in_degrees()
+        #current_angle = get_bearing_in_degrees()
             #targetheading = calculate_degrees(targetpos)
-            
+            #if angle_error >= 0 and targetheading > 0:
+             #   left()
+            #elif angle_error < 0:
+             #   right()  
         
                
 #Setup
