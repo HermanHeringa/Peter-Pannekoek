@@ -31,7 +31,5 @@ class UDPreceiver:
             mreq = struct.pack("4sl", socket.inet_aton(self.MCAST_GRP), socket.INADDR_ANY)
 
             sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
-
-            while True:
-              print(sock.recv(10240))
+            return sock.recv(10240)
 

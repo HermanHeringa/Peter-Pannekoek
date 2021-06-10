@@ -1,0 +1,16 @@
+De centrale unit moet:
+	De posities opvragen van de robots via de camera
+	transleren naar webots posities(want camera posities zijn in pixels)
+	Goals kiezen/ keuze maken wat je wilt doen met robots/ welke formaties (user input)
+	User input of automatische programma allebij is goed
+	Berekenen welke robots het dichtsbij bij welk doel is.
+	goal assignment aan de robots. (lokaal op de CU niet naar robots)
+	angles/headings opvragen van de robots.
+	nieuwe angles berekenen op de robots(lokaal op de CU niet naar robots)
+	Headings doorsturen naar robots.
+	
+	dan loop van posities
+	hier moeten we een afwijking in maken en als robots te ver afdwalen van de goal
+	of het te lang duurt opnieuw angle procedure doorlopen.
+	Wanneer de robot dichtbij genoeg zijn qua posities dan moet de server stop doorgeven aan de robots
+	
