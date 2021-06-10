@@ -7,7 +7,12 @@ import time
 
 # Capturing video through webcam
 webcam = cv2.VideoCapture(1)
+width = webcam.get(cv2.CAP_PROP_FRAME_WIDTH)
+height = webcam.get(cv2.CAP_PROP_FRAME_HEIGHT)
+print(width, height)
 
+webcam.set(3, 1920)
+webcam.set(4, 1080)
 # Start a while loop
 while(1):
 	
@@ -35,7 +40,7 @@ while(1):
 
 	# Set range for blue color and
 	# define mask
-	blue_lower = np.array([100, 80, 2], np.uint8)
+	blue_lower = np.array([4, 175, 218], np.uint8)
 	blue_upper = np.array([130, 255, 255], np.uint8)
 	blue_mask = cv2.inRange(hsvFrame, blue_lower, blue_upper)
 	
@@ -70,6 +75,8 @@ while(1):
 		if(area > 1000):
 			x, y, w, h = cv2.boundingRect(contour)
 			M = cv2.moments(contour)
+			rotatedRect = cv2.minAreaRect(contour)
+			print(rotatedRect)
 			cx = int(M['m10']/M['m00'])
 			cy = int(M['m01']/M['m00'])
 			print(cx,cy)
@@ -90,6 +97,8 @@ while(1):
 		area = cv2.contourArea(contour)
 		if(area > 1000):
 			x, y, w, h = cv2.boundingRect(contour)
+			rotatedRect = cv2.minAreaRect(contour)
+			print(rotatedRect)
 			M = cv2.moments(contour)
 			cx = int(M['m10']/M['m00'])
 			cy = int(M['m01']/M['m00'])
@@ -114,6 +123,8 @@ while(1):
 			cx = int(M['m10']/M['m00'])
 			cy = int(M['m01']/M['m00'])
 			print(cx,cy)
+			rotatedRect = cv2.minAreaRect(contour)
+			print(rotatedRect)
 			imageFrame = cv2.rectangle(imageFrame, (x, y),
 									(x + w, y + h),
 									(255, 0, 0), 2)
