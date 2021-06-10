@@ -13,6 +13,9 @@ print(width, height)
 
 webcam.set(3, 1920)
 webcam.set(4, 1080)
+prevAngle = 0
+verandering = 0
+sicko = 0
 # Start a while loop
 while(1):
 	
@@ -76,29 +79,53 @@ while(1):
 			x, y, w, h = cv2.boundingRect(contour)
 			M = cv2.moments(contour)
 			rotatedRect = cv2.minAreaRect(contour)
-			print(rotatedRect)
+			#print(rotatedRect)
+			(cx, cy), (width, height), angle = rotatedRect
+			
+			
+			
+			if angle > prevAngle:
+				print("right")
+				change = angle - prevAngle
+				print(change)
+			elif angle < prevAngle:
+				change = angle - prevAngle
+				print("left")
+				print(change)
+			
+			change = 0
 			cx = int(M['m10']/M['m00'])
 			cy = int(M['m01']/M['m00'])
-			print(cx,cy)
+			#print(cx,cy)
 			imageFrame = cv2.rectangle(imageFrame, (x, y),
 									(x + w, y + h),
-									(0, 0, 255), 2)
+									(0, 0, 0), 2)
 			
-			cv2.putText(imageFrame, "Red Colour", (x, y),
-						cv2.FONT_HERSHEY_SIMPLEX, 1.0,
-						(0, 0, 255))	
+			prevAngle = angle
+			#print(sicko % 360)
 
 	# Creating contour to track green color
 	contours, hierarchy = cv2.findContours(green_mask,
 										cv2.RETR_TREE,
 										cv2.CHAIN_APPROX_SIMPLE)
+						
 	#print(contours)
 	for pic, contour in enumerate(contours):
 		area = cv2.contourArea(contour)
 		if(area > 1000):
 			x, y, w, h = cv2.boundingRect(contour)
 			rotatedRect = cv2.minAreaRect(contour)
-			print(rotatedRect)
+			#print(rotatedRect)
+			(cx, cy), (width, height), angle = rotatedRect
+			print(angle + verandering)
+			if angle > prevAngle:
+				#AngleUpwards = True
+				if angle > 90 and prevAngle < 90:
+					verandering + 90
+			else:
+				#AngleUpwards = False
+				if angle < 90 and prevAngle > 90:
+					verandering -= 90
 			M = cv2.moments(contour)
 			cx = int(M['m10']/M['m00'])
 			cy = int(M['m01']/M['m00'])
@@ -110,7 +137,7 @@ while(1):
 			cv2.putText(imageFrame, "Green Colour", (x, y),
 						cv2.FONT_HERSHEY_SIMPLEX,
 						1.0, (0, 255, 0))
-    
+			prevAngle = angle
 	# Creating contour to track blue color
 	contours, hierarchy = cv2.findContours(blue_mask,
 										cv2.RETR_TREE,
@@ -124,7 +151,18 @@ while(1):
 			cy = int(M['m01']/M['m00'])
 			print(cx,cy)
 			rotatedRect = cv2.minAreaRect(contour)
-			print(rotatedRect)
+			#print(rotatedRect)
+			(cx, cy), (width, height), angle = rotatedRect
+			print(angle + verandering)
+			if angle > prevAngle:
+				#AngleUpwards = True
+				if angle > 90 and prevAngle < 90:
+					verandering + 90
+			else:
+				#AngleUpwards = False
+				if angle < 90 and prevAngle > 90:
+					verandering -= 90
+			(cx, cy), (width, height), angle = rotatedRect
 			imageFrame = cv2.rectangle(imageFrame, (x, y),
 									(x + w, y + h),
 									(255, 0, 0), 2)
@@ -132,7 +170,7 @@ while(1):
 			cv2.putText(imageFrame, "Blue Colour", (x, y),
 						cv2.FONT_HERSHEY_SIMPLEX,
 						1.0, (255, 0, 0))
-			
+			prevAngle = angle
 	# Program Termination
 	cv2.imshow("Multiple Color Detection in Real-TIme", imageFrame)
 	if cv2.waitKey(10) & 0xFF == ord('q'):
