@@ -17,7 +17,7 @@ HOSTADDR = (UDP_IP, UDP_HOSTPORT)
 
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-sock.bind(ADDR)
+
 sock.settimeout(0)
 
 # create the Robot instance.
@@ -127,10 +127,14 @@ def calculate_degrees(pos):
         
 def start():
 
-    send_msg("w")
     wahedWaar = True
-    
+    cnt = 0
     while robot.step(TIME_STEP) != -1:
+        
+        send_msg(cnt)
+        cnt += 1
+    
+        '''
         #only assign the goal once and calculate how much degrees to turn from the 0 point
         #if you repeat these calculations the degrees to turn from the 0 point will shift
         if wahedWaar:
@@ -172,9 +176,14 @@ def start():
                 right()
         else:
              forward()
+             
+             
+        '''
+             
                                  
 #Setup
 heading = get_bearing_in_degrees()
 pos = get_pos()
+send_msg("Wake")
 start()
     

@@ -6,16 +6,34 @@ import cv2
 import time
 
 # Capturing video through webcam
-webcam = cv2.VideoCapture(1)
-width = webcam.get(cv2.CAP_PROP_FRAME_WIDTH)
-height = webcam.get(cv2.CAP_PROP_FRAME_HEIGHT)
-print(width, height)
+webcam = cv2.VideoCapture(0)
+webcam.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
+webcam.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
+print("Starting...")
 
-webcam.set(3, 1920)
-webcam.set(4, 1080)
-prevAngle = 0
-verandering = 0
-sicko = 0
+red_quadrant = 0
+green_quadrant = 0
+blue_quadrant = 0
+
+r_difference = 0
+g_difference = 0
+b_difference = 0
+
+r_prevAngle = 0
+g_prevAngle = 0
+b_prevAngle = 0
+
+r_heading = 0
+g_heading = 0
+b_heading = 0
+
+dif_threshold = 80
+
+
+
+def tatat(mask, quadrant):
+	pass
+
 # Start a while loop
 while(1):
 	
@@ -79,30 +97,33 @@ while(1):
 			x, y, w, h = cv2.boundingRect(contour)
 			M = cv2.moments(contour)
 			rotatedRect = cv2.minAreaRect(contour)
-			#print(rotatedRect)
-			(cx, cy), (width, height), angle = rotatedRect
-			
-			
-			
-			if angle > prevAngle:
-				print("right")
-				change = angle - prevAngle
-				print(change)
-			elif angle < prevAngle:
-				change = angle - prevAngle
-				print("left")
-				print(change)
-			
-			change = 0
+
+			(cx, cy), (width, height), r_angle = rotatedRect
+		
 			cx = int(M['m10']/M['m00'])
 			cy = int(M['m01']/M['m00'])
-			#print(cx,cy)
+
 			imageFrame = cv2.rectangle(imageFrame, (x, y),
 									(x + w, y + h),
-									(0, 0, 0), 2)
+									(0, 0,255), 2)
+
+			cv2.putText(imageFrame, "Red Colour", (x, y),
+						cv2.FONT_HERSHEY_SIMPLEX,
+						1.0, (0, 0, 255))
+
+			#Check if the difference is bigger than the threshold
+			#If it is a quadrant has been crossed
+			if r_difference > dif_threshold:
+				red_quadrant -= 1
+			elif r_difference < -1 * dif_threshold:
+				red_quadrant += 1
+
+			r_difference = r_prevAngle - r_angle
+			r_prevAngle = r_angle
+			r_heading = r_heading + r_difference + (90 * red_quadrant)
+
+			print(f"R: {r_heading % 360}")
 			
-			prevAngle = angle
-			#print(sicko % 360)
 
 	# Creating contour to track green color
 	contours, hierarchy = cv2.findContours(green_mask,
@@ -115,21 +136,13 @@ while(1):
 		if(area > 1000):
 			x, y, w, h = cv2.boundingRect(contour)
 			rotatedRect = cv2.minAreaRect(contour)
-			#print(rotatedRect)
-			(cx, cy), (width, height), angle = rotatedRect
-			print(angle + verandering)
-			if angle > prevAngle:
-				#AngleUpwards = True
-				if angle > 90 and prevAngle < 90:
-					verandering + 90
-			else:
-				#AngleUpwards = False
-				if angle < 90 and prevAngle > 90:
-					verandering -= 90
+
+			(cx, cy), (width, height), g_angle = rotatedRect
+
 			M = cv2.moments(contour)
 			cx = int(M['m10']/M['m00'])
 			cy = int(M['m01']/M['m00'])
-			print(cx,cy)
+	
 			imageFrame = cv2.rectangle(imageFrame, (x, y),
 									(x + w, y + h),
 									(0, 255, 0), 2)
@@ -137,7 +150,20 @@ while(1):
 			cv2.putText(imageFrame, "Green Colour", (x, y),
 						cv2.FONT_HERSHEY_SIMPLEX,
 						1.0, (0, 255, 0))
-			prevAngle = angle
+
+			#Check if the difference is bigger than the threshold
+			#If it is a quadrant has been crossed
+			if g_difference > dif_threshold:
+				green_quadrant -= 1
+			elif g_difference < -1 * dif_threshold:
+				green_quadrant += 1
+
+			g_difference = g_prevAngle - g_angle
+			g_prevAngle = g_angle
+			g_heading = g_heading + g_difference + (90 * green_quadrant)
+
+			print(f"G: {g_heading % 360}")
+
 	# Creating contour to track blue color
 	contours, hierarchy = cv2.findContours(blue_mask,
 										cv2.RETR_TREE,
@@ -149,20 +175,11 @@ while(1):
 			M = cv2.moments(contour)
 			cx = int(M['m10']/M['m00'])
 			cy = int(M['m01']/M['m00'])
-			print(cx,cy)
+
 			rotatedRect = cv2.minAreaRect(contour)
-			#print(rotatedRect)
-			(cx, cy), (width, height), angle = rotatedRect
-			print(angle + verandering)
-			if angle > prevAngle:
-				#AngleUpwards = True
-				if angle > 90 and prevAngle < 90:
-					verandering + 90
-			else:
-				#AngleUpwards = False
-				if angle < 90 and prevAngle > 90:
-					verandering -= 90
-			(cx, cy), (width, height), angle = rotatedRect
+
+			(cx, cy), (width, height), b_angle = rotatedRect
+			
 			imageFrame = cv2.rectangle(imageFrame, (x, y),
 									(x + w, y + h),
 									(255, 0, 0), 2)
@@ -170,7 +187,20 @@ while(1):
 			cv2.putText(imageFrame, "Blue Colour", (x, y),
 						cv2.FONT_HERSHEY_SIMPLEX,
 						1.0, (255, 0, 0))
-			prevAngle = angle
+			
+			#Check if the difference is bigger than the threshold
+			#If it is a quadrant has been crossed
+			if b_difference > dif_threshold:
+				blue_quadrant -= 1
+			elif b_difference < -1 * dif_threshold:
+				blue_quadrant += 1
+
+			b_difference = b_prevAngle - b_angle
+			b_prevAngle = b_angle
+			b_heading = b_heading + b_difference + (90 * blue_quadrant)
+
+			print(f"B: {b_heading % 360}")
+	
 	# Program Termination
 	cv2.imshow("Multiple Color Detection in Real-TIme", imageFrame)
 	if cv2.waitKey(10) & 0xFF == ord('q'):

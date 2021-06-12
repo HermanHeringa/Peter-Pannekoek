@@ -79,10 +79,11 @@ def turn(degrees):
 def start():
 
     send_msg("w")
-    
+    cnt = 0 
     while robot.step(TIME_STEP) != -1:
-                  
-            try:
+        send_msg(cnt)
+        cnt += 1      
+        '''    try:
                 data,addr = sock.recvfrom(1024)
             except:
                 data = -1
@@ -117,10 +118,10 @@ def start():
                     pos = get_pos()
                     send_msg(pos)
                     
-                data = -1
+                data = -1'''
                
 #Setup
 heading = get_bearing_in_degrees()
 pos = get_pos()
-#start()
+start()
     
