@@ -114,13 +114,13 @@ while(1):
 			#Check if the difference is bigger than the threshold
 			#If it is a quadrant has been crossed
 			if r_difference > dif_threshold:
-				red_quadrant -= 1
-			elif r_difference < -1 * dif_threshold:
 				red_quadrant += 1
+			elif r_difference < -1 * dif_threshold:
+				red_quadrant -= 1
 
 			r_difference = r_prevAngle - r_angle
 			r_prevAngle = r_angle
-			r_heading = r_heading + r_difference + (90 * red_quadrant)
+			r_heading = r_angle + (90 * red_quadrant)
 
 			print(f"R: {r_heading % 360}")
 			
@@ -154,13 +154,13 @@ while(1):
 			#Check if the difference is bigger than the threshold
 			#If it is a quadrant has been crossed
 			if g_difference > dif_threshold:
-				green_quadrant -= 1
-			elif g_difference < -1 * dif_threshold:
 				green_quadrant += 1
-
+			elif g_difference < -1 * dif_threshold:
+				green_quadrant -= 1
+            
 			g_difference = g_prevAngle - g_angle
 			g_prevAngle = g_angle
-			g_heading = g_heading + g_difference + (90 * green_quadrant)
+			g_heading = g_angle + (90 * green_quadrant)
 
 			print(f"G: {g_heading % 360}")
 
@@ -191,16 +191,16 @@ while(1):
 			#Check if the difference is bigger than the threshold
 			#If it is a quadrant has been crossed
 			if b_difference > dif_threshold:
-				blue_quadrant -= 1
-			elif b_difference < -1 * dif_threshold:
 				blue_quadrant += 1
+			elif b_difference < -1 * dif_threshold:
+				blue_quadrant -= 1
 
 			b_difference = b_prevAngle - b_angle
 			b_prevAngle = b_angle
-			b_heading = b_heading + b_difference + (90 * blue_quadrant)
+			b_heading = b_angle + (90 * blue_quadrant)
 
 			print(f"B: {b_heading % 360}")
-	
+
 	# Program Termination
 	cv2.imshow("Multiple Color Detection in Real-TIme", imageFrame)
 	if cv2.waitKey(10) & 0xFF == ord('q'):
