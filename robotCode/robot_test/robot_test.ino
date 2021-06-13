@@ -85,22 +85,22 @@ void setup()
 void loop()
 {
    delay(5000);
-  rotate("right", 180);
+  rotate(180);
   delay(2000);
   move_forward(200);
   delay(4000);
-  rotate("right", 90);
+  rotate(90);
   move_forward(200);
   delay(2500);
-  rotate("right", 90);
+  rotate(90);
   delay(1500);
    move_forward(200);
   delay(2500);
-  rotate("right", 90);
+  rotate(90);
   delay(2500);
   move_forward(200);
   delay(5000);
-  rotate("right", 270);
+  rotate(270);
   delay(4000);
   move_forward(200);
   delay(3000);
