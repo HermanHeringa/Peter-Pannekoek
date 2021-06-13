@@ -1,18 +1,23 @@
 from controller import Robot, Motor, Compass, GPS
 import math
 import socket
+import numpy as np
+#IMPORTENT#
+#this is a variation to RobotController1 from 8/6/21
+#the goal was to develop a simpler version to turn the robot
 
 TIME_STEP = 16
 
 MAX_SPEED = 1
 UDP_IP = "127.0.0.1"
-UDP_PORT = 4211
+UDP_PORT = 4210
 UDP_HOSTPORT = 1337
 ADDR = (UDP_IP,UDP_PORT)
 HOSTADDR = (UDP_IP, UDP_HOSTPORT)
 
+
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-sock.bind(ADDR)
+
 sock.settimeout(0)
 
 # create the Robot instance.
@@ -24,10 +29,11 @@ compass.enable(1)
 gps.enable(1)
 
 def send_msg(message):
-    print(f"{message} r2")
+    print(message)
     sock.sendto(str(message).encode(), HOSTADDR)
 
 def get_bearing_in_degrees():
+    #calculate the bearing/heading
     north = compass.getValues()
     rad = math.atan2(north[0], north[2])
     bearing = (rad - 1.5708) / math.pi * 180.0
@@ -38,7 +44,7 @@ def get_bearing_in_degrees():
 def get_pos():
     xyz = gps.getValues() #Get XYZ Values from GPS Module
     xyz.pop(1)            #Remove Y value because it is not needed
-    xyz = [ round(elem, 2) for elem in xyz]
+    #xyz = [ round(elem, 2) for elem in xyz]
     return xyz            #Return X and Z values
     
 def run_motor(left, right):
@@ -55,16 +61,16 @@ def run_motor(left, right):
 
 #Functions defining movement and speed
 def forward():
-    run_motor(0.1,0.1)
+    run_motor(0.05,0.05)
 
 def backward():
-    run_motor(-0.1,-0.1)
+    run_motor(-0.05,-0.05)
 
 def left():
-    run_motor(-0.1,0.1)
+    run_motor(-0.05,0.05)
 
 def right():
-    run_motor(0.1,-0.1)
+    run_motor(0.05,-0.05)
     
 def stop():
     run_motor(0.0,0.0)
@@ -74,54 +80,86 @@ def turn(degrees):
     pass
 
 
-
-
+        
+        
 def start():
 
-    send_msg("w")
-    cnt = 0 
+    #wahedWaar = True
+    wahedWaar2 = False
     while robot.step(TIME_STEP) != -1:
-        send_msg(cnt)
-        cnt += 1      
-        '''    try:
-                data,addr = sock.recvfrom(1024)
-            except:
-                data = -1
-                addr = -1
+        
+        try:
+            data,addr = sock.recvfrom(1024)
+        except:
+            data = -1
+            addr = -1
             
-            if data != -1:
+        if data != -1:
+            
+            data = data.decode().split("#")
+            
+            command = data[0]
+            
+            if command == "pos":
+                pos = get_pos()
+                send_msg(f"pos#{pos}")
+            elif command == "head":
+                target_heading = float(data[1])
+                wahedWaar = True
+                wahedWaar2 = True
+            elif command == "stop":
+                stop()
+                wahedWaar2 = False
                 
-                print(data)
-                print(addr)
-                if data == b"a":
-                    print("aaa")
-                    send_msg("a")
-                elif data == b"f":
-                    send_msg(-1)
-                    forward()
-                elif data == b"b":
-                    send_msg(-1)
-                    backward()
-                elif data == b"l":
-                    send_msg(-1)   
+    
+        if wahedWaar2:
+            #only assign the goal once and calculate how much degrees to turn from the 0 point
+            #if you repeat these calculations the degrees to turn from the 0 point will shift
+            if wahedWaar:
+                print(f"target heading: {target_heading}")
+                #we split the targetheading into postives and negatives to later specify which wat to turn to
+                if target_heading > 180:
+                    target_heading = target_heading - 360
+            
+            #get the angle of the bot compared to the simulated magnetic north
+            current_angle = get_bearing_in_degrees()
+            
+            #only calculate the destination heading once so that it won't shift
+            if wahedWaar:
+                dest_heading = 360 - target_heading
+                #to make sure we stay in the first circle only we subtract 360 degrees when we go over the 360
+                if dest_heading > 360:
+                    dest_heading = dest_heading - 360
+                print(f"dest angle: {dest_heading}")
+                print(f"current angle: {current_angle}")
+                wahedWaar = False
+                
+            #we constantly calculate the angle error. 
+            #this the difference between it's current angle and the destinations angle
+            angle_error = current_angle - dest_heading
+            print (f"error: {angle_error}")
+            print(f"current angle: {current_angle}")
+            
+            
+            #intiate the turn if we are not currently looking at the destinations heading
+            #because the robot is not 100% accurate we give it a slight error zone of 2 degrees
+            if current_angle != dest_heading and angle_error > 2 or angle_error < -2 :
+                #here we choose which side to turn to.
+                #because we split the targetheading in 2 sides we can do it simply by looking if it is negative or positive
+                if target_heading > 0:
                     left()
-                elif data == b"r":
-                    send_msg(-1)
+                else: 
                     right()
-                elif data == b"s":
-                    send_msg(-1)
-                    stop()
-                elif data == b"h":
-                    heading = get_bearing_in_degrees()
-                    send_msg(heading)
-                elif data == b"p":
-                    pos = get_pos()
-                    send_msg(pos)
-                    
-                data = -1'''
-               
+            else:
+                 forward()
+                 pos = get_pos()
+                 send_msg(f"pos#{pos}")
+            
+             
+                                 
 #Setup
 heading = get_bearing_in_degrees()
 pos = get_pos()
+send_msg("wake#webot2")
 start()
     

@@ -20,7 +20,7 @@ def get_messages():
 
 def start():
     print(f"[RUNNING] Receiving server is running on {HOSTADDR}")
-    cnt = 0
+
     while True:
 
         try:
@@ -30,15 +30,14 @@ def start():
             addr = -1
 
         if data != -1:
-            print(cnt)
-            #print(f"{data},{addr}")
             messages.append(f"{addr}#{data.decode()}\n")
             file.write(f"{addr}#{data.decode()}\n")
             file.flush()
-            cnt += 1
 
-        if keyboard.is_pressed('SPACE'):
-            file.close()
+        if keyboard.is_pressed('q'):
+            f = open("Messages.txt", 'w')
+            f.truncate()
+            f.close()
             break
 
 print("[STARTING] Server is starting up...")

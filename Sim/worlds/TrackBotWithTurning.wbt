@@ -3,7 +3,7 @@ WorldInfo {
   coordinateSystem "NUE"
 }
 Viewpoint {
-  orientation 0.5559194174722613 0.6383569034049762 0.5324040431406506 4.232402562863459
+  orientation 0.5597708794808228 0.6351322272939535 0.5322251556793306 4.2343889295502155
   position 0.3922471897631518 4.000821239111862 0.624702809344982
 }
 TexturedBackground {
@@ -15,7 +15,7 @@ RectangleArena {
   floorSize 2 2
 }
 Robot {
-  translation 1 0.0298407 1
+  translation 0.75 0.0298407 0.5
   rotation 0 -1 0 2.10734e-07
   children [
     Solid {
@@ -113,7 +113,7 @@ Robot {
   controller "RobotController3"
 }
 Robot {
-  translation 0.16 0.0298407 1.84
+  translation 0.5 0.0298407 1.25
   rotation 0 0.9999999999989976 0 0
   children [
     Solid {
