@@ -1,4 +1,5 @@
 #import keyboard 
+from re import split
 import time
 import math
 import socket
@@ -145,7 +146,8 @@ def start():
             address = (address_string[0], int(address_string[1]))
 
             command = split_message[1]
-            data = split_message[2]
+            name = split_message[2]
+            data = split_message[3]
 
             #If the address isn't in the list add it to the list
             if address in address_list:
@@ -158,9 +160,11 @@ def start():
                     #If the position is given by the camera or webots update this in the position list
                     data = data.strip('\'[]\'').split(', ')
                     pos = [float(data[0]), float(data[1])]
-                    bot.position = pos
+                    for bot in bot_list:
+                        if name == bot.name:
+                            bot.position = pos
                     
-                    print(bot.position)
+                    
 
                     #When targets are assigned the bots will spam their location so that when they close to their target
                     #The Central Unit can say they need to stop driving
@@ -183,11 +187,17 @@ def start():
                         
             else:
                 if command == 'wake':
-                    bot = Robot(data, address)
-                    bot_list.append(bot)
-                    address_list.append(address)
-                    send_msg("pos", bot.address)
-        
+                    if name == "camera":
+                        address_list.append(address)
+                    else:
+                        bot = Robot(data, address, name)
+                        bot_list.append(bot)
+                        address_list.append(address)
+
+
+            for bot in bot_list:
+                print(f"{bot.name}{bot.position}")
+
             #Increment which message has been read last
             last_message += 1
             

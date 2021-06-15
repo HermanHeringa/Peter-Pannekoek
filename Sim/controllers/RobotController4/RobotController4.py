@@ -93,17 +93,14 @@ def start():
         except:
             data = -1
             addr = -1
-            
+        
         if data != -1:
             
             data = data.decode().split("#")
             
             command = data[0]
             
-            if command == "pos":
-                pos = get_pos()
-                send_msg(f"pos#{pos}")
-            elif command == "head":
+            if command == "head":
                 target_heading = float(data[1])
                 wahedWaar = True
                 wahedWaar2 = True
@@ -152,11 +149,9 @@ def start():
                     right()
             else:
                  forward()
-                 pos = get_pos()
-                 send_msg(f"pos#{pos}")
-            
-             
-                                 
+        
+        send_msg(f"pos#webot3#{get_pos()}")
+                                      
 #Setup
 heading = get_bearing_in_degrees()
 pos = get_pos()
