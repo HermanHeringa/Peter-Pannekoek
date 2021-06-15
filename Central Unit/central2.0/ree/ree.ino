@@ -1,12 +1,12 @@
 #include <ESP8266WiFi.h>
 #include <WiFiUdp.h>
 #include <Wire.h>
-#include <HMC5883L.h>
-HMC5883L compass;
+//#include <HMC5883L.h>
+//HMC5883L compass;
 
-#define HOST_SSID "HOTSPOT"
-#define HOST_PASS "PASSWORD"
-#define UDP_PORT 4210
+#define HOST_SSID "blablabla"
+#define HOST_PASS "dikzak"
+#define UDP_PORT 1337
 IPAddress HOST_IP =IPAddress(192,168,11,192);
 
 //motor 1
@@ -55,6 +55,7 @@ void setup()
   Serial.print("Listening on UDP port ");
   Serial.println(UDP_PORT);
 
+  /*
   // Initialize Initialize HMC5883L
   Serial.println("Initialize HMC5883L");
   while (!compass.begin())
@@ -78,13 +79,15 @@ void setup()
   // Set calibration offset. See HMC5883L_calibration.ino
   compass.setOffset(128, -158);
 
-  sendPacket("wake#red")
-  
+  */
+
+  sendPacket("wake#red");
   }
 
 //main loop
 void loop()
 {
+  /*
    delay(5000);
   rotate(180);
   delay(2000);
@@ -105,12 +108,12 @@ void loop()
   delay(4000);
   move_forward(200);
   delay(3000);
-  motor_off();
+  motor_off();*/
     
- //commandFromCU();
+ commandFromCU();
 
 }
-
+/*
 void rotate( int angle){
 
     current_angle = getAngle();
@@ -122,7 +125,7 @@ void rotate( int angle){
    
     while(getAngle() != target_angle){
       move_right(170);
-      delay(50);
+      delay(50);q
     }
       motor_off();
 }
@@ -159,7 +162,7 @@ int getAngle(){
 
   return headingDegrees;
 }
-
+*/
 //receive commands from Central Unit
 void commandFromCU(){
   int packetSize = UDP.parsePacket();
@@ -174,7 +177,7 @@ void commandFromCU(){
     Serial.print("Packet received: ");
     Serial.println(packet);
     String mystring(packet);
-    
+    /*
     if(mystring=="f")
     {
       move_forward(180);
@@ -200,12 +203,13 @@ void commandFromCU(){
      {
       Serial.println("stop");
       motor_off();
-      }
+      }*/
   }
 }
 
 //to send packet to Central unit
 void sendPacket(String packet){
+    Serial.println(packet);
     String string= packet;
     char msg[255];
     string.toCharArray(msg,255);//convert string to char array
@@ -213,7 +217,7 @@ void sendPacket(String packet){
     UDP.write(msg);
     UDP.endPacket();
 }
-
+/*
 // set motor speed range 200-255
 void set_speed(int Speed) {
   analogWrite(motorOneSpeed,Speed);
@@ -262,4 +266,4 @@ void motor_off() {
   digitalWrite(motorOneForward , LOW);
   digitalWrite(motorTwoReverse, LOW);
   digitalWrite(motorTwoForward , LOW); 
-}
+}*/

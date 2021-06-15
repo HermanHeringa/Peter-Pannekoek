@@ -8,8 +8,7 @@ class Robot():
     position = []
     goal_achieved = False
 
-    def __init__(self, color, address, name):
-        self.color = color
+    def __init__(self, address, name):
         self.address = address
         self.name = name
 

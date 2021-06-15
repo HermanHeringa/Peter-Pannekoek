@@ -8,7 +8,7 @@ import keyboard
 #from myUDP import UDPsender,UDPreceiver
 from Robot import Robot
 
-UDP_IP = "127.0.0.1"
+UDP_IP = "192.168.11.192"
 UDP_HOSTPORT = 1338
 
 HOSTADDR = (UDP_IP, UDP_HOSTPORT)
@@ -95,6 +95,13 @@ def send_msg(message, address):
     print(f"[SENDING] Message: {message} to address {address}")
     sock.sendto(str(message).encode(), address)
 
+def get_bot(bot_list, name):
+    for bot in bot_list:
+        if bot.name == name:
+            return bot
+        else:
+            return None
+
 def start():
     messages = []
     split_message = []
@@ -112,6 +119,11 @@ def start():
     last_message = 0
 
     while True:
+
+        for bot in bot_list:
+            #send_msg("fggt", bot.address)
+            print(f"{bot.name}{bot.position}")
+
         #Path Planning should come down here I think
         if bot_list != [] and formation != [] and pick_formation == False and formation_assigned == True:
             #For all the robots in the list check which distance is closest and set that as a target
@@ -147,24 +159,26 @@ def start():
 
             command = split_message[1]
             name = split_message[2]
-            data = split_message[3]
+            
 
             #If the address isn't in the list add it to the list
             if address in address_list:
-                index = address_list.index(address)
-                bot = bot_list[index]
+                bot = get_bot(bot_list, name)
+
+                if bot == None:
+                    print("REE")
+                    break
+                
                 
                 #Handle incoming commands here that are not 'wake' because the bots are already added
                 if command == "pos":
-                    
-                    #If the position is given by the camera or webots update this in the position list
+                    data = split_message[3]
                     data = data.strip('\'[]\'').split(', ')
                     pos = [float(data[0]), float(data[1])]
-                    for bot in bot_list:
-                        if name == bot.name:
-                            bot.position = pos
-                    
-                    
+
+                    bot.position = pos
+
+                    #Hier moet je de bot verkrijgen van de naam en niet van de index
 
                     #When targets are assigned the bots will spam their location so that when they close to their target
                     #The Central Unit can say they need to stop driving
@@ -172,7 +186,7 @@ def start():
                         #Check if the position has been reached with a margin of error
                         #This will be harder than expected
                         #You need to track again if the target is left/right behind/front
-
+                        
 
                         #For all targets that every robot is assigned to
                         distance_to_target = bot.get_distance_to_target()
@@ -190,13 +204,10 @@ def start():
                     if name == "camera":
                         address_list.append(address)
                     else:
-                        bot = Robot(data, address, name)
+                        bot = Robot(address, name)
                         bot_list.append(bot)
                         address_list.append(address)
-
-
-            for bot in bot_list:
-                print(f"{bot.name}{bot.position}")
+            
 
             #Increment which message has been read last
             last_message += 1
