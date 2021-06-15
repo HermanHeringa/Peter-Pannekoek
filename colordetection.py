@@ -4,6 +4,8 @@
 import numpy as np
 import cv2
 import time
+import socket
+
 
 # Capturing video through webcam
 webcam = cv2.VideoCapture(0)
@@ -29,10 +31,21 @@ b_heading = 0
 
 dif_threshold = 80
 
+UDP_IP = "127.0.0.1"
+UDP_HOSTPORT = 1337
 
+HOSTADDR = (UDP_IP, UDP_HOSTPORT)
 
-def tatat(mask, quadrant):
-	pass
+sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+sock.settimeout(0)
+
+def send_msg(message):
+    print(message)
+    sock.sendto(str(message).encode(), HOSTADDR)
+
+def get_coords(xy):
+	coords = [xy[0] / 960.0, xy[1] / 1080.0]
+	return coords
 
 # Start a while loop
 while(1):
@@ -122,8 +135,8 @@ while(1):
 			r_prevAngle = r_angle
 			r_heading = r_angle + (90 * red_quadrant)
 
-			print(f"R: {r_heading % 360}")
-			
+			#print(f"R: {r_heading % 360}")
+			send_msg(get_coords([cx,cy]))
 
 	# Creating contour to track green color
 	contours, hierarchy = cv2.findContours(green_mask,

@@ -3,42 +3,11 @@ import time
 import math
 from myUDP import UDPsender,UDPreceiver
 
-packet = UDPsender("192.168.43.70",4210) # Network ip and port
+toRobot = UDPsender("192.168.43.223",4210) # Network ip and port
 fromRobot_1 = UDPreceiver("224.0.1.3",4210)# Host_ip in arduino code, each robot has its own host IP
 fromRobot_1.receive()
 
-apos = [1.0, 1.0]
-robot1 = Robot(90, "blue", "192.168.1.2", "224.0.1.3", apos)
-robot2 = Robot(180, "red", "192.168.1.3", "224.0.1.4", apos)
-robot3 = Robot(270, "green", "192.168.1.4", "224.0.1.5", apos)
-robot4 = Robot(360, "sim", "192.168.1.5", "224.0.1.6", apos)
 
-class Robot():
-    target = null
-    targetheading = null
-    def __init__(self, heading, color, ip, host_ip, pos):
-        self.heading = heading
-        self.color = color
-        self.ip = ip
-        self.robotreceiver = UDPreceiver(host_ip, 4210)
-        self.robotsender = UDPsender(ip, 4210)
-        self.pos = pos
-                
-    def set_target(self, target):
-        self.target = target
-        
-    def set_target_heading(self, targetheading):
-        self.targetheading = targetheading
-    
-    def get_pos(self):
-        #to do
-        return null
-        
-    def get_heading(self):
-        return self.robotreceiver.receive()
-    
-    def get_target_heading(self):
-        return self.targetheading
 
 def calculate_distance(pos1, pos2):
         x1 = pos1[0]
@@ -51,7 +20,6 @@ def calculate_distance(pos1, pos2):
 #pos1 = [2,2]
 #pos2 = [3,3]
 #print(calculate_distance(pos1, pos2))
-    
     
 def calculate_degrees(pos):
     current_pos = np.array(get_pos())
@@ -98,7 +66,6 @@ def calculate_degrees(pos):
     return angle
 
 def assign_goal(target):
-    
     #targetpos = np.array([1.0,1.75]) #testing purpose
     targetheading = calculate_degrees(target)
     #we split the targetheading into postives and negatives to later specify which wat to turn to
@@ -109,7 +76,12 @@ def assign_goal(target):
     if dest_heading > 360:
         dest_heading = dest_heading - 360
 
+apos = [1.7, 0.8]
+h = calculate_degrees(apos)
+toRobot.send(h)
 while True:
+
+    '''
     if keyboard.is_pressed('UP'): 
             packet.send(b"f")
             print("f")
@@ -125,4 +97,4 @@ while True:
     elif keyboard.is_pressed('SPACE'): 
             packet.send(b"s");
             print("SPACE")
-    time.sleep(0.1)
+    time.sleep(0.1)'''
