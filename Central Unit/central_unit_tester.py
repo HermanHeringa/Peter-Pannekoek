@@ -1,11 +1,13 @@
 #import keyboard 
 import time
 import math
+import numpy as np
+import keyboard
 from myUDP import UDPsender,UDPreceiver
 
 toRobot = UDPsender("192.168.43.223",4210) # Network ip and port
-fromRobot_1 = UDPreceiver("224.0.1.3",4210)# Host_ip in arduino code, each robot has its own host IP
-fromRobot_1.receive()
+#fromRobot_1 = UDPreceiver("192.168.137.1",4210)# Host_ip in arduino code, each robot has its own host IP
+#fromRobot_1.receive()
 
 
 
@@ -21,8 +23,9 @@ def calculate_distance(pos1, pos2):
 #pos2 = [3,3]
 #print(calculate_distance(pos1, pos2))
     
+
 def calculate_degrees(pos):
-    current_pos = np.array(get_pos())
+    current_pos = np.array([1.0 , 1.0])
     origin = np.array([pos[0],current_pos[1]])
    # print(f" curpos {current_pos}")
    # print(f" pos {pos}")
@@ -75,26 +78,34 @@ def assign_goal(target):
         #to make sure we stay in the first circle only we subtract 360 degrees when we go over the 360
     if dest_heading > 360:
         dest_heading = dest_heading - 360
-
+ 
 apos = [1.7, 0.8]
-h = calculate_degrees(apos)
+#h = calculate_degrees(apos)
+h = np.float64(90.0)
+print(type(h))
+print(h)
 toRobot.send(h)
+
 while True:
 
-    '''
     if keyboard.is_pressed('UP'): 
-            packet.send(b"f")
+            toRobot.send(b"f")
             print("f")
     elif keyboard.is_pressed('DOWN'):  
-            packet.send(b"b");
-            print("b")
+            toRobot.send(b"b");
+            print("b") 
     elif keyboard.is_pressed('RIGHT'): 
-            packet.send(b"r");
+            toRobot.send(b"r");
             print("r")
     elif keyboard.is_pressed('LEFT'): 
-            packet.send(b"l");
+            toRobot.send(b"l");
             print("l")
     elif keyboard.is_pressed('SPACE'): 
-            packet.send(b"s");
+            toRobot.send(b"s");
             print("SPACE")
-    time.sleep(0.1)'''
+    elif keyboard.is_pressed('g'):
+        h = f"{h}"
+        toRobot.send(h.encode('utf-8'))
+        print("g")
+
+    time.sleep(0.1)
