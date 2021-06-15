@@ -71,6 +71,7 @@ def start():
     #Define buffer for messages
     messages = []
     split_message = []
+    
     address_list = []
     bot_list = []
     position_list = []
@@ -131,6 +132,7 @@ def start():
             #If the address isn't in the list add it to the list
             if address in address_list:
                 index = address_list.index(address)
+                
                 #Handle incoming commands here that are not 'wake' because the bots are already added
                 if command == "pos":
                     
@@ -147,16 +149,11 @@ def start():
                         #You need to track again if the target is left/right behind/front
                         target = [targets[index]]
 
-                        #Al deze checks zijn heel erg bezem in elkaar gezet en werken dus niet goed
-                        #Misschien kan je checken of de distance tussen de targets en de posities klein genoeg is
-                        #Scheelt een hoop statements
-                        #If target is left behind
-
 
                         #For all targets that every robot is assigned to
                         distance_to_target = calculate_distances(target, pos)
                         
-                        if distance_to_target[0] < 0.05:
+                        if distance_to_target[0] < 0.1:
                             send_msg("stop", address_list[index])
                             goal_achieved[index] = True
                         
