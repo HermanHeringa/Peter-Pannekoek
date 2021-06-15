@@ -7,20 +7,22 @@ packet = UDPsender("192.168.43.70",4210) # Network ip and port
 fromRobot_1 = UDPreceiver("224.0.1.3",4210)# Host_ip in arduino code, each robot has its own host IP
 fromRobot_1.receive()
 
-robot1 = Robot(90, "blue", "192.168.1.2", "224.0.1.3")
-robot2 = Robot(180, "red", "192.168.1.3", "224.0.1.4")
-robot3 = Robot(270, "green", "192.168.1.4", "224.0.1.5")
-robot4 = Robot(360, "sim", "192.168.1.5", "224.0.1.6")
+apos = [1.0, 1.0]
+robot1 = Robot(90, "blue", "192.168.1.2", "224.0.1.3", apos)
+robot2 = Robot(180, "red", "192.168.1.3", "224.0.1.4", apos)
+robot3 = Robot(270, "green", "192.168.1.4", "224.0.1.5", apos)
+robot4 = Robot(360, "sim", "192.168.1.5", "224.0.1.6", apos)
 
 class Robot():
     target = null
     targetheading = null
-    def __init__(heading, color, ip, host_ip):
+    def __init__(self, heading, color, ip, host_ip, pos):
         self.heading = heading
         self.color = color
         self.ip = ip
         self.robotreceiver = UDPreceiver(host_ip, 4210)
         self.robotsender = UDPsender(ip, 4210)
+        self.pos = pos
                 
     def set_target(self, target):
         self.target = target
@@ -102,7 +104,7 @@ def assign_goal(target):
     #we split the targetheading into postives and negatives to later specify which wat to turn to
     if targetheading > 180:
         targetheading = targetheading - 360
-    dest_heading = 360 - targetheading
+        dest_heading = 360 - targetheading
         #to make sure we stay in the first circle only we subtract 360 degrees when we go over the 360
         if dest_heading > 360:
             dest_heading = dest_heading - 360
