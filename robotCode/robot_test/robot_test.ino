@@ -6,7 +6,7 @@ HMC5883L compass;
 
 #define HOST_SSID "HOTSPOT"
 #define HOST_PASS "PASSWORD"
-#define UDP_PORT 4210
+#define UDP_PORT 1337
 IPAddress HOST_IP =IPAddress(192,168,11,192);
 
 //motor 1

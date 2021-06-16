@@ -16,16 +16,6 @@ HOSTADDR = (UDP_IP, UDP_HOSTPORT)
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 sock.bind(HOSTADDR)
 
-'''packet = UDPsender("192.168.43.70",4210) # Network ip and port
-fromRobot_1 = UDPreceiver("224.0.1.3",4210)# Host_ip in arduino code, each robot has its own host IP
-fromRobot_1.receive()
-
-apos = [1.0, 1.0]
-robot1 = Robot(90, "blue", "192.168.1.2", "224.0.1.3", apos)
-robot2 = Robot(180, "red", "192.168.1.3", "224.0.1.4", apos)
-robot3 = Robot(270, "green", "192.168.1.4", "224.0.1.5", apos)
-robot4 = Robot(360, "sim", "192.168.1.5", "224.0.1.6", apos)'''
-
 def calculate_distances(targets, pos):
     distances = []
     print(f"{targets}{pos}")
@@ -164,10 +154,6 @@ def start():
             #If the address isn't in the list add it to the list
             if address in address_list:
                 bot = get_bot(bot_list, name)
-
-                if bot == None:
-                    print("REE")
-                    break
                 
                 
                 #Handle incoming commands here that are not 'wake' because the bots are already added
@@ -236,22 +222,3 @@ def start():
 print("[STARTING] Central Unit")
 print("[INFO] To terminate press: q")
 start()
-
-
-'''
-        if keyboard.is_pressed('UP'): 
-                packet.send(b"f")
-                print("f")
-        elif keyboard.is_pressed('DOWN'):  
-                packet.send(b"b");
-                print("b")
-        elif keyboard.is_pressed('RIGHT'): 
-                packet.send(b"r");
-                print("r")
-        elif keyboard.is_pressed('LEFT'): 
-                packet.send(b"l");
-                print("l")
-        elif keyboard.is_pressed('SPACE'): 
-                packet.send(b"s");
-                print("SPACE") 
-        time.sleep(0.1) '''
