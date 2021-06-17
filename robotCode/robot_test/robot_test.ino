@@ -4,10 +4,10 @@
 #include <HMC5883L.h>
 HMC5883L compass;
 
-#define HOST_SSID "HOTSPOT"
-#define HOST_PASS "PASSWORD"
-#define UDP_PORT 1337
-IPAddress HOST_IP =IPAddress(192,168,11,192);
+#define HOST_SSID "AndroidAP"
+#define HOST_PASS "pleo9996"
+#define UDP_PORT 4211 //robot 1 =4210 robot 2= 4211 , robot 3 = 4212
+IPAddress HOST_IP =IPAddress(224, 0, 1, 3);
 
 //motor 1
 int motorOneReverse = 0; //D3
@@ -23,7 +23,7 @@ WiFiUDP UDP;
 char packet[255];
 char reply[] = "Packet received!";
 int current_angle = 0;
-
+int store_angle=0;
 
 void setup() 
 {
@@ -76,15 +76,16 @@ void setup()
   compass.setSamples(HMC5883L_SAMPLES_8);
 
   // Set calibration offset. See HMC5883L_calibration.ino
-  compass.setOffset(128, -158);
+  compass.setOffset(71,-209); //1)143: -115 , 2)71:-209 3)188:102
 
-  sendPacket("wake#red")
-  
+   
   }
 
 //main loop
 void loop()
 {
+  commandFromCU();
+  /*
    delay(5000);
   rotate(180);
   delay(2000);
@@ -106,25 +107,32 @@ void loop()
   move_forward(200);
   delay(3000);
   motor_off();
-    
- //commandFromCU();
+  */
 
 }
 
 void rotate( int angle){
-
     current_angle = getAngle();
-    int target_angle = current_angle + angle;
+    store_angle = current_angle;
     
-    if (target_angle > 360){
-      target_angle = target_angle % 360;
+    if(angle <0){
+    int positive_angle = - 1 * angle;
+     Serial.println(positive_angle );
+    while(!(getAngle()>=180 && getAngle()< 360 - positive_angle))
+    {
+      move_left(200);
     }
-   
-    while(getAngle() != target_angle){
-      move_right(170);
-      delay(50);
+    
     }
-      motor_off();
+    
+    else if(angle >=0){
+    while(getAngle()< angle || getAngle()==359)
+    {
+      move_right(200);
+    }
+    }
+    store_angle = 0;
+    motor_off();
 }
 
 //get current angle
@@ -155,7 +163,8 @@ int getAngle(){
 
   // Convert to degrees
   float headingDegrees = heading * 180/M_PI; 
-  headingDegrees = (360 + (int)headingDegrees - 95) % 360;
+
+  headingDegrees = ( ((int)headingDegrees - store_angle)+360 ) % 360;
 
   return headingDegrees;
 }
@@ -175,33 +184,50 @@ void commandFromCU(){
     Serial.println(packet);
     String mystring(packet);
     
+    
     if(mystring=="f")
     {
-      move_forward(180);
+      move_forward(200);
      
      Serial.println("forward");
      }
      else if(mystring=="b")
      {
-      move_back(180);
+      move_back(200);
       Serial.println("back");
       }
      else if(mystring=="r")
-     {
-      move_right(180);
+      {
+      move_right(200);
      Serial.println("right");
       }
       else if(mystring=="l")
      {
       Serial.println("left");
-      move_left(180);
+      move_left(200);
       }
        else if(mystring=="s")
      {
       Serial.println("stop");
       motor_off();
       }
+      else if(isValidNumber(mystring)){
+       int degrees = mystring.toInt();
+        motor_off();
+        delay(2000);
+        rotate(degrees);
+        mystring="";
+      }
+      
   }
+}
+
+boolean isValidNumber(String str){
+for(byte i=0;i<str.length();i++)
+{
+if(isDigit(str.charAt(i))) return true;
+}
+return false;
 }
 
 //to send packet to Central unit
@@ -209,7 +235,7 @@ void sendPacket(String packet){
     String string= packet;
     char msg[255];
     string.toCharArray(msg,255);//convert string to char array
-    UDP.beginPacket(HOST_IP, UDP_PORT);
+    UDP.beginPacketMulticast(HOST_IP, UDP_PORT, WiFi.localIP());
     UDP.write(msg);
     UDP.endPacket();
 }
