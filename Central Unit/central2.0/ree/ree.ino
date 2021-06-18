@@ -9,7 +9,7 @@ HMC5883L compass;
 #define UDP_PORT 1337
 IPAddress HOST_IP = IPAddress(192, 168, 137, 1);
 
-#define MOTOR_SPEED 255
+#define MOTOR_SPEED 200
 
 String STOP_MESSAGE = "stop";
 String HEAD_MESSAGE = "head";
@@ -85,7 +85,7 @@ void setup() {
   compass.setSamples(HMC5883L_SAMPLES_8);
 
   // Set calibration offset. See HMC5883L_calibration.ino
-  compass.setOffset(128, -158);
+  compass.setOffset(233, 36);
 
   magnetic_offset = getAngle();
 
@@ -155,11 +155,12 @@ void loop() {
 
     angle_error = current_angle - dest_heading;
 
-    if (current_angle != dest_heading && angle_error > 2 or angle_error < -2) {
-      if (angle_error > 0) {
+    if (current_angle != dest_heading && angle_error > 2 || angle_error < -2) {
+      if (target_heading > 0) {
         //turnleft
         Serial.println("LEFT");
         move_left(MOTOR_SPEED);
+        
       } else {
         //turn right
         Serial.println("RIGHT");
@@ -171,6 +172,8 @@ void loop() {
       move_forward(MOTOR_SPEED);
     }
   }
+  sendPacket(String(getAngle()));
+  yield();
 }
 
 //get current angle

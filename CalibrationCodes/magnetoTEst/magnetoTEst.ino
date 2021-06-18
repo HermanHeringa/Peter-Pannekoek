@@ -1,3 +1,5 @@
+#include <HMC5883L.h>
+
 #include <Wire.h>
 #include <Adafruit_HMC5883_U.h>
 
