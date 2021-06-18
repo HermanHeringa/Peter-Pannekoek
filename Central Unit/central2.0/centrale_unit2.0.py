@@ -117,6 +117,7 @@ def start():
         if len(messages) > last_message:
             #Parse incoming message into ('ip-address', port) and messages
             split_message = messages[last_message].strip('\n').split('#')
+            print(split_message)
             
             #Get ip-address and port from message
             address_string = split_message[0].strip('()\'').split('\', ')
@@ -152,7 +153,7 @@ def start():
 
                             #For all targets that every robot is assigned to
                             distance_to_target = bot.get_distance_to_target()
-                            
+                            print(distance_to_target)
                             if distance_to_target < 0.1:
                                 send_msg("stop", bot.address)
                                 bot.goal_achieved = True
@@ -163,14 +164,15 @@ def start():
                                 
             else:
                 if command == 'wake':
+                    #name = split_message[2]
                     if name == "camera":
                         address_list.append(address)
                     else:
                         bot = Robot(address, name)
                         bot_list.append(bot)
                         address_list.append(address)
-                        send_msg(f"head#135", address)
-                print(f"{command}, {name}")
+                        #send_msg(f"head#89", address)
+                print(f"{command}")
             
 
             #Increment which message has been read last
