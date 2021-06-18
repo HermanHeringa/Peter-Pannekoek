@@ -8,7 +8,7 @@ import socket
 
 
 # Capturing video through webcam
-webcam = cv2.VideoCapture(0)
+webcam = cv2.VideoCapture(1)
 webcam.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
 webcam.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
 print("Starting...")
@@ -31,7 +31,7 @@ b_heading = 0
 
 dif_threshold = 80
 
-UDP_IP = "192.168.11.192"
+UDP_IP = "192.168.137.1"
 UDP_HOSTPORT = 1337
 
 HOSTADDR = (UDP_IP, UDP_HOSTPORT)
@@ -71,7 +71,7 @@ def start():
 		# Set range for green color and
 		# define mask
 		green_lower = np.array([25, 150, 72], np.uint8)
-		green_upper = np.array([100, 255, 255], np.uint8)
+		green_upper = np.array([100, 255, 170], np.uint8)
 		green_mask = cv2.inRange(hsvFrame, green_lower, green_upper)
 
 		# Set range for blue color and
@@ -217,6 +217,8 @@ def start():
 
 				#print(f"B: {b_heading % 360}")
 				send_msg(f"pos#blue#{get_coords([bcx,bcy])}")
+
+		#time.sleep(0.5)
 
 		# Program Termination
 		cv2.imshow("Multiple Color Detection in Real-TIme", imageFrame)

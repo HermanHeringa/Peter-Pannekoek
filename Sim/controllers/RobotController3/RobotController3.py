@@ -9,11 +9,13 @@ import numpy as np
 TIME_STEP = 16
 
 MAX_SPEED = 1
-UDP_IP = "127.0.0.1"
+UDP_IP = "192.168.137.1"
 UDP_PORT = 4210
 UDP_HOSTPORT = 1337
 ADDR = (UDP_IP,UDP_PORT)
 HOSTADDR = (UDP_IP, UDP_HOSTPORT)
+
+BOT_NAME = "webot1"
 
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -150,11 +152,11 @@ def start():
             else:
                  forward()
         
-        send_msg(f"pos#webot#{get_pos()}")
+        send_msg(f"pos#{BOT_NAME}#{get_pos()}")
                                       
 #Setup
 heading = get_bearing_in_degrees()
 pos = get_pos()
-send_msg("wake#webot")
+send_msg(f"wake#{BOT_NAME}")
 start()
     

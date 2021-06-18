@@ -9,11 +9,13 @@ import numpy as np
 TIME_STEP = 16
 
 MAX_SPEED = 1
-UDP_IP = "127.0.0.1"
+UDP_IP = "192.168.137.1"
 UDP_PORT = 4210
 UDP_HOSTPORT = 1337
 ADDR = (UDP_IP,UDP_PORT)
 HOSTADDR = (UDP_IP, UDP_HOSTPORT)
+
+BOT_NAME = "webot3"
 
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -117,6 +119,8 @@ def start():
                 #we split the targetheading into postives and negatives to later specify which wat to turn to
                 if target_heading > 180:
                     target_heading = target_heading - 360
+                elif target_heading < -180:
+                    target_heading = target_heading + 360
             
             #get the angle of the bot compared to the simulated magnetic north
             current_angle = get_bearing_in_degrees()
@@ -150,11 +154,11 @@ def start():
             else:
                  forward()
         
-        send_msg(f"pos#webot3#{get_pos()}")
+        send_msg(f"pos#{BOT_NAME}#{get_pos()}")
                                       
 #Setup
 heading = get_bearing_in_degrees()
 pos = get_pos()
-send_msg("wake#webot3")
+send_msg(f"wake#{BOT_NAME}")
 start()
     

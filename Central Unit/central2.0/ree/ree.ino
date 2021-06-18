@@ -1,13 +1,26 @@
 #include <ESP8266WiFi.h>
 #include <WiFiUdp.h>
 #include <Wire.h>
-//#include <HMC5883L.h>
-//HMC5883L compass;
+#include <HMC5883L.h>
+HMC5883L compass;
 
-#define HOST_SSID "blablabla"
-#define HOST_PASS "dikzak"
+#define HOST_SSID "Bezems"
+#define HOST_PASS "aaaaaaaa"
 #define UDP_PORT 1337
-IPAddress HOST_IP =IPAddress(192,168,11,192);
+IPAddress HOST_IP = IPAddress(192, 168, 137, 1);
+
+#define MOTOR_SPEED 255
+
+String STOP_MESSAGE = "stop";
+String HEAD_MESSAGE = "head";
+
+String incomingMessage = "";
+bool wahedWaar = false;
+bool wahedWaar2 = false;
+int target_heading = 0;
+int dest_heading = 0;
+int angle_error = 0;
+int magnetic_offset = 0;
 
 //motor 1
 int motorOneReverse = 0; //D3
@@ -24,24 +37,21 @@ char packet[255];
 char reply[] = "Packet received!";
 int current_angle = 0;
 
-
-void setup() 
-{
+void setup() {
   //setup motors
   pinMode(motorOneReverse, OUTPUT);
   pinMode(motorOneForward , OUTPUT);
   pinMode(motorOneSpeed , OUTPUT);
- 
+
   pinMode(motorTwoReverse, OUTPUT);
   pinMode(motorTwoForward , OUTPUT);
   pinMode(motorTwoSpeed , OUTPUT);
-  
+
   // Connect to host wifi network
   Serial.begin(9600);
   WiFi.begin(HOST_SSID, HOST_PASS);
   Serial.print("Connecting");
-  while (WiFi.status() != WL_CONNECTED)
-  {
+  while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
   }
@@ -55,11 +65,9 @@ void setup()
   Serial.print("Listening on UDP port ");
   Serial.println(UDP_PORT);
 
-  /*
   // Initialize Initialize HMC5883L
   Serial.println("Initialize HMC5883L");
-  while (!compass.begin())
-  {
+  while (!compass.begin()) {
     Serial.println("Could not find a valid HMC5883L sensor, check wiring!");
     delay(500);
   }
@@ -79,60 +87,95 @@ void setup()
   // Set calibration offset. See HMC5883L_calibration.ino
   compass.setOffset(128, -158);
 
-  */
+  magnetic_offset = getAngle();
 
-  sendPacket("wake#red");
-  }
+  sendPacket("wake#blue");
+}
 
 //main loop
-void loop()
-{
+void loop() {
   /*
-   delay(5000);
-  rotate(180);
-  delay(2000);
-  move_forward(200);
-  delay(4000);
-  rotate(90);
-  move_forward(200);
-  delay(2500);
-  rotate(90);
-  delay(1500);
-   move_forward(200);
-  delay(2500);
-  rotate(90);
-  delay(2500);
-  move_forward(200);
-  delay(5000);
-  rotate(270);
-  delay(4000);
-  move_forward(200);
-  delay(3000);
-  motor_off();*/
-    
- commandFromCU();
+    delay(5000);
+    rotate(180);
+    delay(2000);
+    move_forward(200);
+    delay(4000);
+    rotate(90);
+    move_forward(200);
+    delay(2500);
+    rotate(90);
+    delay(1500);
+    move_forward(200);
+    delay(2500);
+    rotate(90);
+    delay(2500);
+    move_forward(200);
+    delay(5000);
+    rotate(270);
+    delay(4000);
+    move_forward(200);
+    delay(3000);
+    motor_off();*/
 
-}
-/*
-void rotate( int angle){
+  incomingMessage = commandFromCU();
+  if (incomingMessage != "") {
 
-    current_angle = getAngle();
-    int target_angle = current_angle + angle;
-    
-    if (target_angle > 360){
-      target_angle = target_angle % 360;
-    }
-   
-    while(getAngle() != target_angle){
-      move_right(170);
-      delay(50);q
-    }
+    if (incomingMessage == STOP_MESSAGE) {
+      //Stop driving
       motor_off();
+      Serial.println("STOP");
+    } else if (incomingMessage.substring(0, 4) == HEAD_MESSAGE) {
+      String data = incomingMessage.substring(5);
+      target_heading = data.toInt() - magnetic_offset;
+      wahedWaar = true;
+      wahedWaar2 = true;
+      Serial.println(data);
+    }
+    incomingMessage = "";
+  }
+
+  if (wahedWaar2) {
+    if (wahedWaar) {
+
+      if (target_heading > 180.0) {
+        target_heading = target_heading - 360.0;
+      }
+    }
+    current_angle = getAngle();
+
+    if (wahedWaar) {
+      dest_heading = 360 - target_heading;
+
+      if (dest_heading > 360) {
+        dest_heading = dest_heading - 360;
+      }
+      wahedWaar = false;
+    }
+
+
+    angle_error = current_angle - dest_heading;
+
+    if (current_angle != dest_heading && angle_error > 2 or angle_error < -2) {
+      if (angle_error > 0) {
+        //turnleft
+        Serial.println("LEFT");
+        move_left(MOTOR_SPEED);
+      } else {
+        //turn right
+        Serial.println("RIGHT");
+        move_right(MOTOR_SPEED);
+      }
+    } else {
+      //forward
+      Serial.println("FORWARD");
+      move_forward(MOTOR_SPEED);
+    }
+  }
 }
 
 //get current angle
-int getAngle(){
- Vector norm = compass.readNormalize();
+int getAngle() {
+  Vector norm = compass.readNormalize();
 
   // Calculate heading
   float heading = atan2(norm.YAxis, norm.XAxis);
@@ -157,18 +200,18 @@ int getAngle(){
   }
 
   // Convert to degrees
-  float headingDegrees = heading * 180/M_PI; 
+  float headingDegrees = heading * 180 / M_PI;
   headingDegrees = (360 + (int)headingDegrees - 95) % 360;
 
   return headingDegrees;
 }
-*/
+
 //receive commands from Central Unit
-void commandFromCU(){
+String commandFromCU() {
   int packetSize = UDP.parsePacket();
   if (packetSize) {
     //Serial.print("Received packet! Size: ");
-    //Serial.println(packetSize); 
+    //Serial.println(packetSize);
     int len = UDP.read(packet, 255);
     if (len > 0)
     {
@@ -177,55 +220,32 @@ void commandFromCU(){
     Serial.print("Packet received: ");
     Serial.println(packet);
     String mystring(packet);
-    /*
-    if(mystring=="f")
-    {
-      move_forward(180);
-     
-     Serial.println("forward");
-     }
-     else if(mystring=="b")
-     {
-      move_back(180);
-      Serial.println("back");
-      }
-     else if(mystring=="r")
-     {
-      move_right(180);
-     Serial.println("right");
-      }
-      else if(mystring=="l")
-     {
-      Serial.println("left");
-      move_left(180);
-      }
-       else if(mystring=="s")
-     {
-      Serial.println("stop");
-      motor_off();
-      }*/
+    return mystring;
+  } else {
+    return "";
   }
 }
 
+
 //to send packet to Central unit
-void sendPacket(String packet){
-    Serial.println(packet);
-    String string= packet;
-    char msg[255];
-    string.toCharArray(msg,255);//convert string to char array
-    UDP.beginPacket(HOST_IP, UDP_PORT);
-    UDP.write(msg);
-    UDP.endPacket();
+void sendPacket(String packet) {
+  Serial.println(packet);
+  String string = packet;
+  char msg[255];
+  string.toCharArray(msg, 255); //convert string to char array
+  UDP.beginPacket(HOST_IP, UDP_PORT);
+  UDP.write(msg);
+  UDP.endPacket();
 }
-/*
+
 // set motor speed range 200-255
 void set_speed(int Speed) {
-  analogWrite(motorOneSpeed,Speed);
-  analogWrite(motorTwoSpeed,Speed);
+  analogWrite(motorOneSpeed, Speed);
+  analogWrite(motorTwoSpeed, Speed);
 }
 
 //move forward
-void move_forward(int speed) { 
+void move_forward(int speed) {
   set_speed(speed);
   digitalWrite(motorOneReverse, LOW);
   digitalWrite(motorOneForward , HIGH);
@@ -245,25 +265,25 @@ void move_back(int speed) {
 //rotate right
 void move_right(int speed) {
   set_speed(speed);
-  digitalWrite(motorOneReverse,LOW);
+  digitalWrite(motorOneReverse, LOW);
   digitalWrite(motorOneForward , HIGH);
   digitalWrite(motorTwoReverse, HIGH);
-  digitalWrite(motorTwoForward , LOW); 
+  digitalWrite(motorTwoForward , LOW);
 }
 
 //rotate left
 void move_left(int speed) {
   set_speed(speed);
-  digitalWrite(motorOneReverse,HIGH);
+  digitalWrite(motorOneReverse, HIGH);
   digitalWrite(motorOneForward , LOW);
   digitalWrite(motorTwoReverse, LOW);
-  digitalWrite(motorTwoForward , HIGH); 
+  digitalWrite(motorTwoForward , HIGH);
 }
 
 //don't move
 void motor_off() {
-  digitalWrite(motorOneReverse,LOW);
+  digitalWrite(motorOneReverse, LOW);
   digitalWrite(motorOneForward , LOW);
   digitalWrite(motorTwoReverse, LOW);
-  digitalWrite(motorTwoForward , LOW); 
-}*/
+  digitalWrite(motorTwoForward , LOW);
+}
