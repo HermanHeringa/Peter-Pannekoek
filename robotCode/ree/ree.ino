@@ -10,6 +10,7 @@ HMC5883L compass;
 IPAddress HOST_IP = IPAddress(192, 168, 137, 1);
 
 #define MOTOR_SPEED 180
+#define ACCEPTABLE_ERROR 5
 
 String STOP_MESSAGE = "stop";
 String HEAD_MESSAGE = "head";
@@ -94,28 +95,6 @@ void setup() {
 
 //main loop
 void loop() {
-  /*
-    delay(5000);
-    rotate(180);
-    delay(2000);
-    move_forward(200);
-    delay(4000);
-    rotate(90);
-    move_forward(200);
-    delay(2500);
-    rotate(90);
-    delay(1500);
-    move_forward(200);
-    delay(2500);
-    rotate(90);
-    delay(2500);
-    move_forward(200);
-    delay(5000);
-    rotate(270);
-    delay(4000);
-    move_forward(200);
-    delay(3000);
-    motor_off();*/
 
   incomingMessage = commandFromCU();
   if (incomingMessage != "") {
@@ -124,7 +103,7 @@ void loop() {
       //Stop driving
       motor_off();
       Serial.println("STOP");
-    } 
+    }
     else if (incomingMessage.substring(0, 4) == HEAD_MESSAGE) {
       String data = incomingMessage.substring(5);
       target_heading = data.toInt();
@@ -139,35 +118,34 @@ void loop() {
     if (wahedWaar) {
 
       if (target_heading > 180.0) {
-        target_heading = target_heading - 360.0;
+        target_heading = 360 - target_heading;
       }
-    }
-    current_angle = getAngle();
+      dest_heading = - target_heading;  // flip angle to clockwise
 
-    if (wahedWaar) {
-      dest_heading = 360 - target_heading;
-
-      if (dest_heading > 360) {
-        dest_heading = dest_heading - 360;
+      if (dest_heading < 0) {
+        dest_heading = 360 + dest_heading;
       }
+
+      current_angle = getAngle();
       wahedWaar = false;
     }
 
 
-    angle_error = current_angle - dest_heading;
+    angle_error = dest_heading - current_angle;
 
-    if (current_angle != dest_heading && (angle_error > 5 || angle_error < -5) ) {
-      if (angle_error > 0) {
-        //turnleft
-        Serial.println("LEFT");
-        move_left(MOTOR_SPEED);
-        
-      } else {
-        //turn right
-        Serial.println("RIGHT");
-        move_right(MOTOR_SPEED);
-      }
-    } else {
+
+    if (angle_error > ACCEPTABLE_ERROR) {
+      //turn right
+      Serial.println("RIGHT");
+      move_right(MOTOR_SPEED);
+
+    } else if (angle_error < -ACCEPTABLE_ERROR) {
+      //turnleft
+      Serial.println("LEFT");
+      move_left(MOTOR_SPEED);
+
+    }
+    else {
       //forward
       Serial.println("FORWARD");
       delay(500);
@@ -208,7 +186,7 @@ int getAngle() {
   float headingDegrees = heading * 180 / M_PI;
   headingDegrees = (360 + (int)headingDegrees - 95) % 360;
 
-  return ((((int)headingDegrees - magnetic_offset) +360) % 360);
+  return ((((int)headingDegrees - magnetic_offset) + 360) % 360);
 }
 
 //receive commands from Central Unit
