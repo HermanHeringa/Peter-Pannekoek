@@ -131,7 +131,7 @@ void loop() {
     }
 
 
-    angle_error = dest_heading - current_angle;
+    angle_error = ((dest_heading - current_angle + 360) % 360) - 180;
 
 
     if (angle_error > ACCEPTABLE_ERROR) {
