@@ -85,7 +85,7 @@ void setup() {
   compass.setSamples(HMC5883L_SAMPLES_8);
 
   // Set calibration offset. See HMC5883L_calibration.ino
-  compass.setOffset(233, 36);
+  compass.setOffset(75, -89);
 
   magnetic_offset = getAngle();
 
@@ -142,6 +142,7 @@ void loop() {
       }
     }
     current_angle = getAngle();
+    //Serial.println(current_angle);
 
     if (wahedWaar) {
       dest_heading = 360 - target_heading;
@@ -204,7 +205,7 @@ int getAngle() {
 
   // Convert to degrees
   float headingDegrees = heading * 180 / M_PI;
-  headingDegrees = (360 + (int)headingDegrees - 95) % 360;
+  //headingDegrees = (360 + (int)headingDegrees - 95) % 360;
 
   return headingDegrees;
 }

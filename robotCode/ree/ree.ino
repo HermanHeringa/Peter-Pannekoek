@@ -86,11 +86,11 @@ void setup() {
   compass.setSamples(HMC5883L_SAMPLES_8);
 
   // Set calibration offset. See HMC5883L_calibration.ino
-  compass.setOffset(67, -182);//67:-182
+  compass.setOffset(75, -89);//67:-182
 
   magnetic_offset = getAngle();
 
-  sendPacket("wake#blue");
+  sendPacket("wake#red");
 }
 
 //main loop
@@ -102,6 +102,7 @@ void loop() {
     if (incomingMessage == STOP_MESSAGE) {
       //Stop driving
       motor_off();
+      wahedWaar2 = false;
       Serial.println("STOP");
     }
     else if (incomingMessage.substring(0, 4) == HEAD_MESSAGE) {
@@ -126,33 +127,50 @@ void loop() {
         dest_heading = 360 + dest_heading;
       }
 
-      current_angle = getAngle();
+      
       wahedWaar = false;
     }
 
+    current_angle = getAngle();
+    angle_error = ((dest_heading - current_angle + 360) % 360);
 
-    angle_error = ((dest_heading - current_angle + 360) % 360) - 180;
 
+    if (angle_error > 180 && angle_error < 360 - ACCEPTABLE_ERROR) {
+      //turn left
+      Serial.println("LEFT");
+      move_left(MOTOR_SPEED);
 
-    if (angle_error > ACCEPTABLE_ERROR) {
+    } else if (angle_error < 180 && angle_error > ACCEPTABLE_ERROR) {
       //turn right
       Serial.println("RIGHT");
       move_right(MOTOR_SPEED);
 
-    } else if (angle_error < -ACCEPTABLE_ERROR) {
-      //turnleft
-      Serial.println("LEFT");
-      move_left(MOTOR_SPEED);
-
     }
-    else {
+    if ((angle_error > (360 - ACCEPTABLE_ERROR)) || (angle_error < ACCEPTABLE_ERROR)) {
       //forward
       Serial.println("FORWARD");
-      delay(500);
+      
       move_forward(MOTOR_SPEED);
     }
   }
   sendPacket(String(getAngle()));
+
+  /*
+  Serial.print("target heading: ");
+  Serial.println(target_heading);
+  
+  Serial.print("current heading: ");
+  Serial.println(current_angle);
+  
+  Serial.print("destination heading: ");
+  Serial.println(dest_heading);
+  
+  Serial.print("angle error: ");
+  Serial.println(angle_error);
+  Serial.println("=================================");
+
+  delay(500); */
+  
   yield();
 }
 
