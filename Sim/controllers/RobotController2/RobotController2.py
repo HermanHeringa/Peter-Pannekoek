@@ -15,7 +15,7 @@ UDP_HOSTPORT = 1337
 ADDR = (UDP_IP,UDP_PORT)
 HOSTADDR = (UDP_IP, UDP_HOSTPORT)
 
-BOT_NAME = "webot2"
+BOT_NAME = "webot1"
 
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)

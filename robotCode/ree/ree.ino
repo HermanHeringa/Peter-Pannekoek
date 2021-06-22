@@ -86,11 +86,11 @@ void setup() {
   compass.setSamples(HMC5883L_SAMPLES_8);
 
   // Set calibration offset. See HMC5883L_calibration.ino
-  compass.setOffset(75, -89);//67:-182
+  compass.setOffset(111, -68);//67:-182
 
   magnetic_offset = getAngle();
 
-  sendPacket("wake#red");
+  sendPacket("wake#blue");
 }
 
 //main loop
@@ -153,7 +153,7 @@ void loop() {
       move_forward(MOTOR_SPEED);
     }
   }
-  sendPacket(String(getAngle()));
+  //sendPacket(String(getAngle()));
 
   /*
   Serial.print("target heading: ");
