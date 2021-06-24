@@ -36,7 +36,7 @@ def get_targets(bot_list):
 def calculate_degrees(position, target):
     deltaX = target[0] - position[0]
     deltaY = target[1] - position[1]
-    return -round(np.degrees(np.math.atan2(deltaY, deltaX)))
+    return -round(float(np.degrees(np.math.atan2(deltaY, deltaX))))  # Casting to float first seems redundant, but IDE throws a warning if you don't
 
 
 def send_msg(message, address):
@@ -52,13 +52,11 @@ def get_bot(bot_list, name):
     
 
 def start():
-    bot = None
     field_width = 1.92
     field_height = 1.08
     side_margin = 0.2
 
     messages = []
-    split_message = []
     bot_list = []
     address_list = []
 
@@ -72,9 +70,9 @@ def start():
                   [field_width/2, field_height-side_margin],
                   [field_width-side_margin, field_height/2]]
     formation3 = [[side_margin, side_margin], 
-                   [field_width/2, side_margin], 
-                   [field_width-side_margin, side_margin], 
-                   [field_width/2, field_height-side_margin]]
+                  [field_width/2, side_margin],
+                  [field_width-side_margin, side_margin],
+                  [field_width/2, field_height-side_margin]]
 
     pick_formation = True
     formation_assigned = True

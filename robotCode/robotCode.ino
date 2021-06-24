@@ -2,6 +2,7 @@
 #include <WiFiUdp.h>
 #include <Wire.h>
 #include <HMC5883L.h>
+
 HMC5883L compass;
 
 #define HOST_SSID "Bezems"
@@ -10,18 +11,18 @@ HMC5883L compass;
 IPAddress HOST_IP = IPAddress(192, 168, 137, 1);
 
 #define MOTOR_SPEED 180
-#define ACCEPTABLE_ERROR 5
+#define ACCEPTABLE_ERROR 2
 
 String STOP_MESSAGE = "stop";
 String HEAD_MESSAGE = "head";
 
 String incomingMessage = "";
-bool wahedWaar = false;
-bool wahedWaar2 = false;
-int target_heading = 0;
-int dest_heading = 0;
-int angle_error = 0;
-int magnetic_offset = 0;
+bool firstLoop = false;
+bool drivingToTarget = false;
+int targetHeading = 0;
+int destHeading = 0;
+int angleError = 0;
+int magneticOffset = 0;
 
 //motor 1
 int motorOneReverse = 0; //D3
@@ -36,7 +37,7 @@ int motorTwoSpeed = 13; //D7
 WiFiUDP UDP;
 char packet[255];
 char reply[] = "Packet received!";
-int current_angle = 0;
+int currentAngle = 0;
 
 void setup() {
   //setup motors
@@ -86,9 +87,9 @@ void setup() {
   compass.setSamples(HMC5883L_SAMPLES_8);
 
   // Set calibration offset. See HMC5883L_calibration.ino
-  compass.setOffset(111, -68);//67:-182
+  compass.setOffset(83, -185);//67:-182
 
-  magnetic_offset = getAngle();
+  magneticOffset = getAngle();
 
   sendPacket("wake#blue");
 }
@@ -101,75 +102,58 @@ void loop() {
 
     if (incomingMessage == STOP_MESSAGE) {
       //Stop driving
-      motor_off();
-      wahedWaar2 = false;
+      motorOff();
+      drivingToTarget = false;
       Serial.println("STOP");
     }
     else if (incomingMessage.substring(0, 4) == HEAD_MESSAGE) {
       String data = incomingMessage.substring(5);
-      target_heading = data.toInt();
-      wahedWaar = true;
-      wahedWaar2 = true;
+      targetHeading = data.toInt();
+      firstLoop = true;
+      drivingToTarget = true;
       Serial.println(data);
     }
     incomingMessage = "";
   }
 
-  if (wahedWaar2) {
-    if (wahedWaar) {
+  if (drivingToTarget) {
+    if (firstLoop) {
 
-      if (target_heading > 180.0) {
-        target_heading = 360 - target_heading;
+      if (targetHeading > 180.0) {
+        targetHeading = 360 - targetHeading;
       }
-      dest_heading = - target_heading;  // flip angle to clockwise
+      destHeading = - targetHeading;  // flip angle to clockwise
 
-      if (dest_heading < 0) {
-        dest_heading = 360 + dest_heading;
+      if (destHeading < 0) {
+        destHeading = 360 + destHeading;
       }
 
       
-      wahedWaar = false;
+      firstLoop = false;
     }
 
-    current_angle = getAngle();
-    angle_error = ((dest_heading - current_angle + 360) % 360);
+    currentAngle = getAngle();
+    angleError = ((destHeading - currentAngle + 360) % 360);
 
 
-    if (angle_error > 180 && angle_error < 360 - ACCEPTABLE_ERROR) {
+    if (angleError > 180 && angleError < 360 - ACCEPTABLE_ERROR) {
       //turn left
       Serial.println("LEFT");
-      move_left(MOTOR_SPEED);
+      moveLeft(MOTOR_SPEED);
 
-    } else if (angle_error < 180 && angle_error > ACCEPTABLE_ERROR) {
+    } else if (angleError < 180 && angleError > ACCEPTABLE_ERROR) {
       //turn right
       Serial.println("RIGHT");
-      move_right(MOTOR_SPEED);
+      moveRight(MOTOR_SPEED);
 
     }
-    if ((angle_error > (360 - ACCEPTABLE_ERROR)) || (angle_error < ACCEPTABLE_ERROR)) {
+    if ((angleError > (360 - ACCEPTABLE_ERROR)) || (angleError < ACCEPTABLE_ERROR)) {
       //forward
       Serial.println("FORWARD");
       
-      move_forward(MOTOR_SPEED);
+      moveForward(MOTOR_SPEED);
     }
   }
-  //sendPacket(String(getAngle()));
-
-  /*
-  Serial.print("target heading: ");
-  Serial.println(target_heading);
-  
-  Serial.print("current heading: ");
-  Serial.println(current_angle);
-  
-  Serial.print("destination heading: ");
-  Serial.println(dest_heading);
-  
-  Serial.print("angle error: ");
-  Serial.println(angle_error);
-  Serial.println("=================================");
-
-  delay(500); */
   
   yield();
 }
@@ -190,13 +174,11 @@ int getAngle() {
   heading += declinationAngle;
 
   // Correct for heading < 0deg and heading > 360deg
-  if (heading < 0)
-  {
+  if (heading < 0) {
     heading += 2 * PI;
   }
 
-  if (heading > 2 * PI)
-  {
+  if (heading > 2 * PI) {
     heading -= 2 * PI;
   }
 
@@ -204,15 +186,13 @@ int getAngle() {
   float headingDegrees = heading * 180 / M_PI;
   headingDegrees = (360 + (int)headingDegrees - 95) % 360;
 
-  return ((((int)headingDegrees - magnetic_offset) + 360) % 360);
+  return ((((int)headingDegrees - magneticOffset) + 360) % 360);
 }
 
 //receive commands from Central Unit
 String commandFromCU() {
   int packetSize = UDP.parsePacket();
   if (packetSize) {
-    //Serial.print("Received packet! Size: ");
-    //Serial.println(packetSize);
     int len = UDP.read(packet, 255);
     if (len > 0)
     {
@@ -239,15 +219,15 @@ void sendPacket(String packet) {
   UDP.endPacket();
 }
 
-// set motor speed range 200-255
-void set_speed(int Speed) {
+// set motor speed range 180-255
+void setSpeed(int Speed) {
   analogWrite(motorOneSpeed, Speed);
   analogWrite(motorTwoSpeed, Speed);
 }
 
 //move forward
-void move_forward(int speed) {
-  set_speed(speed);
+void moveForward(int speed) {
+  setSpeed(speed);
   digitalWrite(motorOneReverse, LOW);
   digitalWrite(motorOneForward , HIGH);
   digitalWrite(motorTwoReverse, LOW);
@@ -255,8 +235,8 @@ void move_forward(int speed) {
 }
 
 //move back
-void move_back(int speed) {
-  set_speed(speed);
+void moveBack(int speed) {
+  setSpeed(speed);
   digitalWrite(motorOneReverse, HIGH);
   digitalWrite(motorOneForward , LOW);
   digitalWrite(motorTwoReverse, HIGH);
@@ -264,8 +244,8 @@ void move_back(int speed) {
 }
 
 //rotate right
-void move_right(int speed) {
-  set_speed(speed);
+void moveRight(int speed) {
+  setSpeed(speed);
   digitalWrite(motorOneReverse, LOW);
   digitalWrite(motorOneForward , HIGH);
   digitalWrite(motorTwoReverse, HIGH);
@@ -273,8 +253,8 @@ void move_right(int speed) {
 }
 
 //rotate left
-void move_left(int speed) {
-  set_speed(speed);
+void moveLeft(int speed) {
+  setSpeed(speed);
   digitalWrite(motorOneReverse, HIGH);
   digitalWrite(motorOneForward , LOW);
   digitalWrite(motorTwoReverse, LOW);
@@ -282,7 +262,7 @@ void move_left(int speed) {
 }
 
 //don't move
-void motor_off() {
+void motorOff() {
   digitalWrite(motorOneReverse, LOW);
   digitalWrite(motorOneForward , LOW);
   digitalWrite(motorTwoReverse, LOW);

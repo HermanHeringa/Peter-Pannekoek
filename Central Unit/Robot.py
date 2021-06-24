@@ -1,6 +1,7 @@
 import math
 
-class Robot():
+
+class Robot:
     name = ""
     target = []
     target_heading = 0.0

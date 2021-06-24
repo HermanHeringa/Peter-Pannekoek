@@ -8,7 +8,7 @@ import socket
 
 
 # Capturing video through webcam
-webcam = cv2.VideoCapture(0)
+webcam = cv2.VideoCapture(1)
 webcam.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
 webcam.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
 print("Starting...")
@@ -31,7 +31,7 @@ b_heading = 0
 
 dif_threshold = 80
 
-UDP_IP = "192.168.11.192"
+UDP_IP = "192.168.137.1"
 UDP_HOSTPORT = 1337
 
 HOSTADDR = (UDP_IP, UDP_HOSTPORT)
@@ -39,9 +39,11 @@ HOSTADDR = (UDP_IP, UDP_HOSTPORT)
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 sock.settimeout(0)
 
+
 def send_msg(message):
-    print(message)
-    sock.sendto(str(message).encode(), HOSTADDR)
+	print(message)
+	sock.sendto(str(message).encode(), HOSTADDR)
+
 
 def get_coords(xy):
 	coords = [xy[0] / 960.0, xy[1] / 1080.0]
@@ -50,8 +52,8 @@ def get_coords(xy):
 
 def start():
 	# Start a while loop
-	while(1):
-		
+	while True:
+
 		# Reading the video from the
 		# webcam in image frames
 		_, imageFrame = webcam.read()
@@ -71,7 +73,7 @@ def start():
 		# Set range for green color and
 		# define mask
 		green_lower = np.array([25, 150, 72], np.uint8)
-		green_upper = np.array([100, 255, 255], np.uint8)
+		green_upper = np.array([100, 255, 170], np.uint8)
 		green_mask = cv2.inRange(hsvFrame, green_lower, green_upper)
 
 		# Set range for blue color and
@@ -79,55 +81,50 @@ def start():
 		blue_lower = np.array([4, 175, 218], np.uint8)
 		blue_upper = np.array([130, 255, 255], np.uint8)
 		blue_mask = cv2.inRange(hsvFrame, blue_lower, blue_upper)
-		
+
 		# Morphological Transform, Dilation
 		# for each color and bitwise_and operator
 		# between imageFrame and mask determines
 		# to detect only that particular color
 		kernal = np.ones((5, 5), "uint8")
-		
+
 		# For red color
 		red_mask = cv2.dilate(red_mask, kernal)
-		res_red = cv2.bitwise_and(imageFrame, imageFrame,
-								mask = red_mask)
-		
+		res_red = cv2.bitwise_and(imageFrame, imageFrame, mask=red_mask)
+
 		# For green color
 		green_mask = cv2.dilate(green_mask, kernal)
-		res_green = cv2.bitwise_and(imageFrame, imageFrame,
-									mask = green_mask)
-		
+		res_green = cv2.bitwise_and(imageFrame, imageFrame, mask=green_mask)
+
 		# For blue color
 		blue_mask = cv2.dilate(blue_mask, kernal)
-		res_blue = cv2.bitwise_and(imageFrame, imageFrame,
-								mask = blue_mask)
+		res_blue = cv2.bitwise_and(imageFrame, imageFrame, mask=blue_mask)
 
 		# Creating contour to track red color
-		contours, hierarchy = cv2.findContours(red_mask,
-											cv2.RETR_TREE,
-											cv2.CHAIN_APPROX_SIMPLE)
-		
+		contours, hierarchy = cv2.findContours(red_mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+
 		for pic, contour in enumerate(contours):
 			area = cv2.contourArea(contour)
-			if(area > 1000):
+			if area > 1000:
 				x, y, w, h = cv2.boundingRect(contour)
 				M = cv2.moments(contour)
 				rotatedRect = cv2.minAreaRect(contour)
 
 				(rcx, rcy), (width, height), r_angle = rotatedRect
-			
+
 				rcx = int(M['m10']/M['m00'])
 				rcy = int(M['m01']/M['m00'])
 
 				imageFrame = cv2.rectangle(imageFrame, (x, y),
 										(x + w, y + h),
-										(0, 0,255), 2)
+										(0, 0, 255), 2)
 
 				cv2.putText(imageFrame, "Red Colour", (x, y),
 							cv2.FONT_HERSHEY_SIMPLEX,
 							1.0, (0, 0, 255))
 
-				#Check if the difference is bigger than the threshold
-				#If it is a quadrant has been crossed
+				# Check if the difference is bigger than the threshold
+				# If it is a quadrant has been crossed
 				'''if r_difference > dif_threshold:
 					red_quadrant += 1
 				elif r_difference < -1 * dif_threshold:
@@ -137,18 +134,18 @@ def start():
 				r_prevAngle = r_angle
 				r_heading = r_angle + (90 * red_quadrant)'''
 
-				#print(f"R: {r_heading % 360}")
+				# print(f"R: {r_heading % 360}")
 				send_msg(f"pos#red#{get_coords([rcx,rcy])}")
 
 		# Creating contour to track green color
 		contours, hierarchy = cv2.findContours(green_mask,
 											cv2.RETR_TREE,
 											cv2.CHAIN_APPROX_SIMPLE)
-							
-		#print(contours)
+
+		# print(contours)
 		for pic, contour in enumerate(contours):
 			area = cv2.contourArea(contour)
-			if(area > 1000):
+			if area > 1000:
 				x, y, w, h = cv2.boundingRect(contour)
 				rotatedRect = cv2.minAreaRect(contour)
 
@@ -157,17 +154,17 @@ def start():
 				M = cv2.moments(contour)
 				gcx = int(M['m10']/M['m00'])
 				gcy = int(M['m01']/M['m00'])
-		
+
 				imageFrame = cv2.rectangle(imageFrame, (x, y),
 										(x + w, y + h),
 										(0, 255, 0), 2)
-				
+
 				cv2.putText(imageFrame, "Green Colour", (x, y),
 							cv2.FONT_HERSHEY_SIMPLEX,
 							1.0, (0, 255, 0))
 
-				#Check if the difference is bigger than the threshold
-				#If it is a quadrant has been crossed
+				# Check if the difference is bigger than the threshold
+				# If it is a quadrant has been crossed
 				'''if g_difference > dif_threshold:
 					green_quadrant += 1
 				elif g_difference < -1 * dif_threshold:
@@ -177,7 +174,7 @@ def start():
 				g_prevAngle = g_angle
 				g_heading = g_angle + (90 * green_quadrant)'''
 
-				#print(f"G: {g_heading % 360}")
+				# print(f"G: {g_heading % 360}")
 				send_msg(f"pos#green#{get_coords([gcx,gcy])}")
 
 		# Creating contour to track blue color
@@ -186,7 +183,7 @@ def start():
 											cv2.CHAIN_APPROX_SIMPLE)
 		for pic, contour in enumerate(contours):
 			area = cv2.contourArea(contour)
-			if(area > 1000):
+			if area > 1000:
 				x, y, w, h = cv2.boundingRect(contour)
 				M = cv2.moments(contour)
 				bcx = int(M['m10']/M['m00'])
@@ -195,17 +192,17 @@ def start():
 				rotatedRect = cv2.minAreaRect(contour)
 
 				(bcx, bcy), (width, height), b_angle = rotatedRect
-				
+
 				imageFrame = cv2.rectangle(imageFrame, (x, y),
 										(x + w, y + h),
 										(255, 0, 0), 2)
-				
+
 				cv2.putText(imageFrame, "Blue Colour", (x, y),
 							cv2.FONT_HERSHEY_SIMPLEX,
 							1.0, (255, 0, 0))
-				
-				#Check if the difference is bigger than the threshold
-				#If it is a quadrant has been crossed
+
+				# Check if the difference is bigger than the threshold
+				# If it is a quadrant has been crossed
 				'''if b_difference > dif_threshold:
 					blue_quadrant += 1
 				elif b_difference < -1 * dif_threshold:
@@ -215,8 +212,10 @@ def start():
 				b_prevAngle = b_angle
 				b_heading = b_angle + (90 * blue_quadrant)'''
 
-				#print(f"B: {b_heading % 360}")
+				# print(f"B: {b_heading % 360}")
 				send_msg(f"pos#blue#{get_coords([bcx,bcy])}")
+
+		# time.sleep(0.5)
 
 		# Program Termination
 		cv2.imshow("Multiple Color Detection in Real-TIme", imageFrame)
@@ -225,6 +224,7 @@ def start():
 			cv2.destroyAllWindows()
 			break
 
-#Setup
+
+# Setup
 send_msg("wake#camera")
-start()	
+start()
