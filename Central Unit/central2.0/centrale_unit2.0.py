@@ -71,6 +71,10 @@ def start():
                   [side_margin, field_height/2],
                   [field_width/2, field_height-side_margin],
                   [field_width-side_margin, field_height/2]]
+    formation3 = [[side_margin, side_margin], 
+                   [field_width/2, side_margin], 
+                   [field_width-side_margin, side_margin], 
+                   [field_width/2, field_height-side_margin]]
 
     pick_formation = True
     formation_assigned = True
@@ -107,7 +111,6 @@ def start():
         if len(messages) > last_message:
             # Parse incoming message into ('ip-address', port) and messages
             split_message = messages[last_message].strip('\n').split('#')
-            print(split_message)
             
             # Get ip-address and port from message
             address_string = split_message[0].strip('()\'').split('\', ')
@@ -152,7 +155,7 @@ def start():
                         bot = Robot(address, name)
                         bot_list.append(bot)
                         address_list.append(address)
-                print(f"{command}")
+                    print(f"{command} , {name}")
 
             # Increment which message has been read last
             last_message += 1
@@ -162,8 +165,8 @@ def start():
             if bot.goal_achieved is True:
                 goals_achieved += 1
 
-        if goals_achieved == len(bot_list):
-            print("Formation Achieved")
+        if goals_achieved == len(bot_list) and goals_achieved > 0:
+            print("[INFO] Formation Achieved")
             for bot in bot_list:
                 bot.goal_achieved = False
             formation = []
@@ -187,6 +190,11 @@ def start():
         if keyboard.is_pressed('2') and pick_formation is True:
             formation = formation2
             print("[EXECUTING] Formation 2: Diamond")
+            pick_formation = False
+            formation_assigned = True
+        if keyboard.is_pressed('3') and pick_formation is True:
+            formation = formation3
+            print("[EXECUTING] Formation 3: Triangle")
             pick_formation = False
             formation_assigned = True
 

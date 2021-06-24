@@ -41,5 +41,5 @@ def start():
             break
 
 print("[STARTING] Server is starting up...")
-print("[INFO] To terminate press SPACEBAR")
+print("[INFO] To terminate press q")
 start()
