@@ -4,6 +4,7 @@ import socket
 import numpy as np
 import keyboard
 from Robot import Robot
+from Ghost_Bot import Ghostbot
 
 UDP_IP = "192.168.137.1"
 UDP_HOSTPORT = 1338
@@ -47,8 +48,13 @@ def send_msg(message, address):
 def get_bot(bot_list, name):
     for _bot in bot_list:
         if _bot.name == name:
-            bot = _bot
-            return bot
+            return _bot
+
+
+def get_linked_bot(ghost_list, linked_bot):
+    for _ghost in ghost_list:
+        if _ghost.linked_bot == linked_bot:
+            return _ghost
     
 
 def start():
@@ -59,6 +65,9 @@ def start():
     messages = []
     bot_list = []
     address_list = []
+
+    ghosts_connected = 0
+    ghost_list = []
 
     formation = []
     formation1 = [[side_margin, side_margin],
@@ -127,7 +136,6 @@ def start():
                     pos = [float(data[0]), float(data[1])]
                     
                     bot = get_bot(bot_list, name)
-
                     if bot is not None:
                         bot.position = pos
 
@@ -145,9 +153,18 @@ def start():
                                 send_msg("stop", bot.address)
                                 bot.goal_achieved = True
 
+                    if ghosts_connected:
+                        ghost = get_linked_bot(ghost_list, bot)
+                        send_msg("newPos#"+str(pos), ghost.address)
+
             else:
                 if command == 'wake':
                     if name == "camera":
+                        address_list.append(address)
+                    elif "ghost" in name:  # name should be ghost-[colour], matching the bot it simulates
+                        ghosts_connected = 1
+                        ghost = Ghostbot(address, name, get_bot(bot_list, name.split('-')[1]))
+                        ghost_list.append(ghost)
                         address_list.append(address)
                     else:
                         bot = Robot(address, name)
