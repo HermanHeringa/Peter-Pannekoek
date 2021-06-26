@@ -1,0 +1,249 @@
+#VRML_SIM R2021a utf8
+# license: Apache License 2.0
+# license url: http://www.apache.org/licenses/LICENSE-2.0
+# This is a proto file for Webots for the C:/Users/samja/Documents/Robot.URDF
+# Extracted from: Robot.urdf
+
+PROTO C:/Users/samja/Documents/Robot.URDF [
+  field  SFVec3f     translation     0 0 0
+  field  SFRotation  rotation        1 0 0 -1.5708
+  field  SFString    name            "C:/Users/samja/Documents/Robot.URDF"  # Is `Robot.name`.
+  field  SFString    controller      "void"                                 # Is `Robot.controller`.
+  field  MFString    controllerArgs  []                                     # Is `Robot.controllerArgs`.
+  field  SFString    customData      ""                                     # Is `Robot.customData`.
+  field  SFBool      supervisor      FALSE                                  # Is `Robot.supervisor`.
+  field  SFBool      synchronization TRUE                                   # Is `Robot.synchronization`.
+  field  SFBool      selfCollision   FALSE                                  # Is `Robot.selfCollision`.
+  field  SFBool      staticBase      TRUE                                   # Defines if the robot base should be pinned to the static environment.
+  field  MFNode      toolSlot        []                                     # Extend the robot with new nodes at the end of the arm.
+]
+{
+  Robot {
+    translation IS translation
+    rotation IS rotation
+    controller IS controller
+    controllerArgs IS controllerArgs
+    customData IS customData
+    supervisor IS supervisor
+    synchronization IS synchronization
+    selfCollision IS selfCollision
+    children [
+      Shape {
+        appearance PBRAppearance {
+          baseColor 0.500000 0.500000 0.500000
+          transparency 0.000000
+          roughness 1.000000
+          metalness 0
+          emissiveColor 0.000000 0.000000 0.000000
+        }
+        geometry Box {
+           size 0.13 0.05 0.09
+        }
+      }
+      Solid {
+        translation 0.000000 0.000000 -0.050000
+        rotation 0.000000 1.000000 0.000000 0.000000
+        children [
+          Shape {
+            appearance PBRAppearance {
+              baseColor 0.500000 0.500000 0.500000
+              transparency 0.000000
+              roughness 1.000000
+              metalness 0
+              emissiveColor 0.000000 0.000000 0.000000
+            }
+            geometry Box {
+               size 0.095 0.06 0.02
+            }
+          }
+          Transform {
+            translation -0.050000 0.000000 0.000000
+            rotation 1.000000 0.000000 0.000000 1.570797
+            children [
+              Shape {
+                appearance PBRAppearance {
+                  baseColor 0.500000 0.500000 0.500000
+                  transparency 0.000000
+                  roughness 1.000000
+                  metalness 0
+                  emissiveColor 0.000000 0.000000 0.000000
+                }
+                geometry Cylinder {
+                  radius 0.03
+                  height 0.02
+                }
+              }
+            ]
+          }
+          Transform {
+            translation 0.050000 0.000000 0.000000
+            rotation 1.000000 0.000000 0.000000 1.570793
+            children [
+              Shape {
+                appearance PBRAppearance {
+                  baseColor 0.500000 0.500000 0.500000
+                  transparency 0.000000
+                  roughness 1.000000
+                  metalness 0
+                  emissiveColor 0.000000 0.000000 0.000000
+                }
+                geometry Cylinder {
+                  radius 0.03
+                  height 0.02
+                }
+              }
+            ]
+          }
+        ]
+        name "trackLeft"
+        boundingObject Group {
+          children [
+            Box {
+               size 0.095000 0.060000 0.020000
+            }
+            Transform {
+              translation -0.050000 0.000000 0.000000
+              rotation 1.000000 0.000000 0.000000 1.570797
+              children [
+                Cylinder {
+                  radius 0.03
+                  height 0.02
+                }
+              ]
+            }
+            Transform {
+              translation 0.050000 0.000000 0.000000
+              rotation 1.000000 0.000000 0.000000 1.570793
+              children [
+                Cylinder {
+                  radius 0.03
+                  height 0.02
+                }
+              ]
+            }
+          ]
+        }
+        physics Physics {
+        }
+      }
+      Solid {
+        translation 0.000000 0.000000 0.050000
+        rotation 0.000000 1.000000 0.000000 0.000000
+        children [
+          Shape {
+            appearance PBRAppearance {
+              baseColor 0.500000 0.500000 0.500000
+              transparency 0.000000
+              roughness 1.000000
+              metalness 0
+              emissiveColor 0.000000 0.000000 0.000000
+            }
+            geometry Box {
+               size 0.095 0.06 0.02
+            }
+          }
+          Transform {
+            translation -0.050000 0.000000 0.000000
+            rotation 1.000000 0.000000 0.000000 1.570797
+            children [
+              Shape {
+                appearance PBRAppearance {
+                  baseColor 0.500000 0.500000 0.500000
+                  transparency 0.000000
+                  roughness 1.000000
+                  metalness 0
+                  emissiveColor 0.000000 0.000000 0.000000
+                }
+                geometry Cylinder {
+                  radius 0.03
+                  height 0.02
+                }
+              }
+            ]
+          }
+          Transform {
+            translation 0.050000 0.000000 0.000000
+            rotation 1.000000 0.000000 0.000000 1.570793
+            children [
+              Shape {
+                appearance PBRAppearance {
+                  baseColor 0.500000 0.500000 0.500000
+                  transparency 0.000000
+                  roughness 1.000000
+                  metalness 0
+                  emissiveColor 0.000000 0.000000 0.000000
+                }
+                geometry Cylinder {
+                  radius 0.03
+                  height 0.02
+                }
+              }
+            ]
+          }
+        ]
+        name "trackRight"
+        boundingObject Group {
+          children [
+            Box {
+               size 0.095000 0.060000 0.020000
+            }
+            Transform {
+              translation -0.050000 0.000000 0.000000
+              rotation 1.000000 0.000000 0.000000 1.570797
+              children [
+                Cylinder {
+                  radius 0.03
+                  height 0.02
+                }
+              ]
+            }
+            Transform {
+              translation 0.050000 0.000000 0.000000
+              rotation 1.000000 0.000000 0.000000 1.570793
+              children [
+                Cylinder {
+                  radius 0.03
+                  height 0.02
+                }
+              ]
+            }
+          ]
+        }
+        physics Physics {
+        }
+      }
+      Solid {
+        translation 0.000000 0.000000 0.000000
+        rotation 0.000000 1.000000 0.000000 0.000000
+        children [
+          Shape {
+            appearance PBRAppearance {
+              baseColor 0.500000 0.500000 0.500000
+              transparency 0.000000
+              roughness 1.000000
+              metalness 0
+              emissiveColor 0.000000 0.000000 0.000000
+            }
+            geometry Box {
+               size 0.13 0.05 0.09
+            }
+          }
+        ]
+        name "solid"
+        boundingObject Box {
+           size 0.130000 0.050000 0.090000
+        }
+        physics Physics {
+        }
+      }
+    ]
+    name IS name 
+    boundingObject Box {
+       size 0.130000 0.050000 0.090000
+    }
+    %{ if fields.staticBase.value == false then }%
+    physics Physics {
+    }
+    %{ end }%
+  }
+}

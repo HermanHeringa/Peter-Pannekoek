@@ -10,3 +10,4 @@ class Ghostbot:
         self.address = address
         self.name = name
         self.linked_bot = linked_bot
+        print(f"{name}, {address}")

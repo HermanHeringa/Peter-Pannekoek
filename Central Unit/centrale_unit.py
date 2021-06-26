@@ -4,9 +4,9 @@ import socket
 import numpy as np
 import keyboard
 from Robot import Robot
-from Ghost_Bot import Ghostbot
+from GhostBot import Ghostbot
 
-UDP_IP = "192.168.137.1"
+UDP_IP = "127.0.0.1"
 UDP_HOSTPORT = 1338
 
 HOSTADDR = (UDP_IP, UDP_HOSTPORT)
@@ -53,7 +53,13 @@ def get_bot(bot_list, name):
 
 def get_linked_bot(ghost_list, linked_bot):
     for _ghost in ghost_list:
+        print(_ghost)
+        print(linked_bot)
+        print(_ghost.linked_bot)
+        print("hfsdjahgjsdljkghksdj")
         if _ghost.linked_bot == linked_bot:
+            print(type(_ghost))
+            print("AAAA")
             return _ghost
     
 
@@ -149,23 +155,29 @@ def start():
                             # For all targets that every robot is assigned to
                             distance_to_target = bot.get_distance_to_target()
                             print(distance_to_target)
-                            if distance_to_target < 0.1:
+                            if distance_to_target < 0.05:
                                 send_msg("stop", bot.address)
                                 bot.goal_achieved = True
 
                     if ghosts_connected:
                         ghost = get_linked_bot(ghost_list, bot)
-                        send_msg("newPos#"+str(pos), ghost.address)
+                        if ghost is not None:
+                            send_msg(f"newPos#{bot.position}", ghost.address)
 
             else:
+                print("ree")
                 if command == 'wake':
                     if name == "camera":
                         address_list.append(address)
-                    elif "ghost" in name:  # name should be ghost-[colour], matching the bot it simulates
+                    elif "ghost" in name:  # name should be ghost-[color], matching the bot it simulates
+                        print(address)
                         ghosts_connected = 1
                         ghost = Ghostbot(address, name, get_bot(bot_list, name.split('-')[1]))
+                        print(ghost)
                         ghost_list.append(ghost)
                         address_list.append(address)
+                        
+                    
                     else:
                         bot = Robot(address, name)
                         bot_list.append(bot)

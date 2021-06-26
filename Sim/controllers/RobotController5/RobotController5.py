@@ -9,13 +9,13 @@ import numpy as np
 TIME_STEP = 16
 
 MAX_SPEED = 1
-UDP_IP = "192.168.137.1"
+UDP_IP = "127.0.0.1"
 UDP_PORT = 4210
 UDP_HOSTPORT = 1337
 ADDR = (UDP_IP,UDP_PORT)
 HOSTADDR = (UDP_IP, UDP_HOSTPORT)
 
-BOT_NAME = "webot4"
+BOT_NAME = "blue"
 
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)

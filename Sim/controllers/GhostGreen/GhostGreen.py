@@ -7,14 +7,15 @@ import socket
 
 TIME_STEP = 16
 MAX_SPEED = 1
-UDP_IP = "192.168.137.1"
+UDP_IP = "127.0.0.1"
 UDP_PORT = 4210
 UDP_HOSTPORT = 1337
 ADDR = (UDP_IP,UDP_PORT)
 HOSTADDR = (UDP_IP, UDP_HOSTPORT)
-BOT_NAME = "ghost-red"
+BOT_NAME = "ghost-green"
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+sock.settimeout(0)
 
 # create the Robot instance.
 robot = Supervisor()
@@ -27,9 +28,14 @@ def send_msg(message):
     print(message)
     sock.sendto(str(message).encode(), HOSTADDR)
 
-def receive_msg(message):
-    #to do
-    pass
+def moveRobot(pos):
+    _, posY, _ = supervisorNode.getPosition()
+    
+    newX, newZ = pos
+
+    new_pos = [newX, posY, newZ]
+
+    trans.setSFVec3f(new_pos)
 
     
 def start():
@@ -48,8 +54,14 @@ def start():
             data = data.decode().split("#")
             command = data[0]
             
+            print(f"{BOT_NAME} {data}")
+            
             if command == "newPos":
-                pass
+                pos = data[1]
+                pos = pos.strip('\'[]\'').split(', ')
+                pos = [float(pos[0]), float(pos[1])]
+                moveRobot(pos)
+                #split de received
                 #split de received
                 #pos[0]= x
                 #pos[2]= z (wij gebruiken x en z in webots)
