@@ -1,6 +1,3 @@
-import math
-
-
 class Ghostbot:
     name = ""
     linked_bot = None

@@ -1,6 +1,5 @@
 import math
 
-
 class Robot:
     name = ""
     target = []
@@ -15,6 +14,8 @@ class Robot:
         self.name = name
         print(name)
 
+    #Function to calculate the distance between the robot and it's assigned target
+    #Using the pythagorean theorem
     def get_distance_to_target(self):
         distance = math.sqrt(((self.target[0]-self.position[0])**2)+((self.target[1]-self.position[1])**2))
         return distance

@@ -123,18 +123,6 @@ def start():
 							cv2.FONT_HERSHEY_SIMPLEX,
 							1.0, (0, 0, 255))
 
-				# Check if the difference is bigger than the threshold
-				# If it is a quadrant has been crossed
-				'''if r_difference > dif_threshold:
-					red_quadrant += 1
-				elif r_difference < -1 * dif_threshold:
-					red_quadrant -= 1
-
-				r_difference = r_prevAngle - r_angle
-				r_prevAngle = r_angle
-				r_heading = r_angle + (90 * red_quadrant)'''
-
-				# print(f"R: {r_heading % 360}")
 				send_msg(f"pos#red#{get_coords([rcx,rcy])}")
 
 		# Creating contour to track green color
@@ -163,18 +151,6 @@ def start():
 							cv2.FONT_HERSHEY_SIMPLEX,
 							1.0, (0, 255, 0))
 
-				# Check if the difference is bigger than the threshold
-				# If it is a quadrant has been crossed
-				'''if g_difference > dif_threshold:
-					green_quadrant += 1
-				elif g_difference < -1 * dif_threshold:
-					green_quadrant -= 1
-				
-				g_difference = g_prevAngle - g_angle
-				g_prevAngle = g_angle
-				g_heading = g_angle + (90 * green_quadrant)'''
-
-				# print(f"G: {g_heading % 360}")
 				send_msg(f"pos#green#{get_coords([gcx,gcy])}")
 
 		# Creating contour to track blue color
@@ -201,21 +177,7 @@ def start():
 							cv2.FONT_HERSHEY_SIMPLEX,
 							1.0, (255, 0, 0))
 
-				# Check if the difference is bigger than the threshold
-				# If it is a quadrant has been crossed
-				'''if b_difference > dif_threshold:
-					blue_quadrant += 1
-				elif b_difference < -1 * dif_threshold:
-					blue_quadrant -= 1
-
-				b_difference = b_prevAngle - b_angle
-				b_prevAngle = b_angle
-				b_heading = b_angle + (90 * blue_quadrant)'''
-
-				# print(f"B: {b_heading % 360}")
 				send_msg(f"pos#blue#{get_coords([bcx,bcy])}")
-
-		# time.sleep(0.5)
 
 		# Program Termination
 		cv2.imshow("Multiple Color Detection in Real-TIme", imageFrame)
