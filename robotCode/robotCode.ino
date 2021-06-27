@@ -5,12 +5,13 @@
 
 HMC5883L compass;
 
+//wifi network
 #define HOST_SSID "Bezems"
 #define HOST_PASS "aaaaaaaa"
 #define UDP_PORT 1337
 IPAddress HOST_IP = IPAddress(192, 168, 137, 1);
 
-#define MOTOR_SPEED 180
+#define MOTOR_SPEED 180 //set speed of the motors (max 255)
 #define ACCEPTABLE_ERROR 2
 
 String STOP_MESSAGE = "stop";
@@ -89,36 +90,39 @@ void setup() {
   // Set calibration offset. See HMC5883L_calibration.ino
   compass.setOffset(83, -185);//67:-182
 
-  magneticOffset = getAngle();
+  magneticOffset = getAngle();//get the current angle of the robot at startup
 
-  sendPacket("wake#blue");
+  sendPacket("wake#blue");//send packet, tell the central unit that the robot is connected.
 }
 
 //main loop
 void loop() {
 
   incomingMessage = commandFromCU();
-  if (incomingMessage != "") {
 
+  //if message is received
+  if (incomingMessage != "") {
+    
+    //if message is "stop",set the motors off
     if (incomingMessage == STOP_MESSAGE) {
       //Stop driving
       motorOff();
       drivingToTarget = false;
       Serial.println("STOP");
     }
+    //else read the read the message as angle
     else if (incomingMessage.substring(0, 4) == HEAD_MESSAGE) {
       String data = incomingMessage.substring(5);
-      targetHeading = data.toInt();
+      targetHeading = data.toInt();//convert data to int
       firstLoop = true;
       drivingToTarget = true;
       Serial.println(data);
     }
     incomingMessage = "";
   }
-
+  
   if (drivingToTarget) {
     if (firstLoop) {
-
       if (targetHeading > 180.0) {
         targetHeading = 360 - targetHeading;
       }
@@ -186,7 +190,7 @@ int getAngle() {
   float headingDegrees = heading * 180 / M_PI;
   headingDegrees = (360 + (int)headingDegrees - 95) % 360;
 
-  return ((((int)headingDegrees - magneticOffset) + 360) % 360);
+  return ((((int)headingDegrees - magneticOffset) + 360) % 360); //magneticOffset is the angle from startup, so the startup angle is set to 0. 
 }
 
 //receive commands from Central Unit
